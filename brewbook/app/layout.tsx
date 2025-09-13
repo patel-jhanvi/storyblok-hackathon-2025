@@ -1,5 +1,9 @@
 import "./globals.css";
 import { ReactNode } from "react";
+import { initStoryblok } from "../lib/storyblok";  // ⬅️ add this
+
+// Initialize Storyblok SDK once, when app loads
+initStoryblok();
 
 export const metadata = {
   title: "Brewbook",
@@ -15,3 +19,4 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     </html>
   );
 }
+
