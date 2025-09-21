@@ -4,7 +4,7 @@ const mockData = [
   {
     type: "cafe" as const,
     title: "Caffeine Hub",
-    summary: "A cozy café with reliable Wi-Fi and plenty of outlets.",
+    summary: "A cozy café with reliable Wi-Fi and plenty of outlets with avaiable working space.",
     image: "/images/cafe.png",
     metadata: ["📶 Wi-Fi", "🔌 Power", "🔊 Quiet"],
   },
