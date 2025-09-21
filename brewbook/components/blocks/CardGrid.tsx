@@ -1,16 +1,33 @@
 import Card from "../ui/Card";
 
 const mockData = [
-  { title: "Caffeine Hub", description: "Cozy café with WiFi", image: "/next.svg" },
-  { title: "Code & Coffee Meetup", description: "Weekly dev meetup", image: "/vercel.svg" },
-  { title: "Study Loft", description: "Quiet spot for long hours", image: "/globe.svg" }
+  {
+    type: "cafe" as const,
+    title: "Caffeine Hub",
+    summary: "A cozy café with reliable Wi-Fi and plenty of outlets.",
+    image: "/images/cafe.png",
+    metadata: ["📶 Wi-Fi", "🔌 Power", "🔊 Quiet"],
+  },
+  {
+    type: "meetup" as const,
+    title: "Code & Coffee Meetup",
+    summary: "Weekly developer meetup for networking & hacking.",
+    image: "/images/meetup.png",
+    metadata: ["📅 Sun, Aug 21", "👤 Tech SF", "💵 Free"],
+  },
+  {
+    type: "study" as const,
+    title: "Study Loft",
+    summary: "Quiet study spot with natural light and group seating.",
+    image: "/images/study.",
+    metadata: ["🪑 Spacious", "🔊 Quiet", "⏰ 8am–10pm"],
+  },
 ];
 
 export default function CardGrid() {
   return (
     <section className="p-8">
-      <h2 className="text-2xl font-bold mb-6 text-center">Featured Spots</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {mockData.map((item, index) => (
           <Card key={index} {...item} />
         ))}
