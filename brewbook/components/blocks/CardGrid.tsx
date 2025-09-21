@@ -19,7 +19,7 @@ const mockData = [
     type: "study" as const,
     title: "Study Loft",
     summary: "Quiet study spot with natural light and group seating.",
-    image: "/images/study.",
+    image: "/images/study.png",
     metadata: ["🪑 Spacious", "🔊 Quiet", "⏰ 8am–10pm"],
   },
 ];
