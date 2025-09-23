@@ -4,6 +4,7 @@ const config: Config = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{ts,tsx}"
   ],
   theme: {
     extend: {},
@@ -11,3 +12,4 @@ const config: Config = {
   plugins: [],
 };
 export default config;
+

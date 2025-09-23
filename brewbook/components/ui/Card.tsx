@@ -1,98 +1,99 @@
-"use client";
-import { useState } from "react";
 import Image from "next/image";
+import { IconMap } from "../ui/IconMap";
+import { useState } from "react";
 
 interface CardProps {
-  type: "cafe" | "study" | "meetup";
+  type: "cafe" | "meetup" | "study";
   title: string;
   summary: string;
   image: string;
   metadata: string[];
 }
 
-export default function Card({ type, title, summary, image, metadata }: CardProps) {
-  const [showReactions, setShowReactions] = useState(false);
 
-  const typeColors: Record<string, string> = {
-    cafe: "bg-amber-700",
-    study: "bg-blue-600",
-    meetup: "bg-green-600",
+export default function Card({ type, title, summary, image, metadata }: CardProps) {
+  const reactions = ["💡", "👏", "❤️", "😖"];
+  const [active, setActive] = useState<string | null>(null);
+
+  const MapIcon = IconMap["location"] as React.ComponentType<any> | undefined;
+
+  const handleClick = (emoji: string) => {
+    setActive(emoji);
+    // reset highlight after 800ms
+    setTimeout(() => setActive(null), 800);
   };
 
-  const reactions = [
-    { emoji: "💡", color: "hover:text-yellow-400", tooltip: "Insight" },
-    { emoji: "👏", color: "hover:text-blue-500", tooltip: "Helpful" },
-    { emoji: "❤️", color: "hover:text-red-500", tooltip: "Loved it" },
-    { emoji: "😖", color: "hover:text-orange-600", tooltip: "Oh no!" },
-  ];
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
       {/* Image */}
-      <div className="relative w-full h-40">
-        <Image src={image} alt={title} fill className="object-cover" />
-      </div>
+      <Image src={image} alt={title} width={400} height={225} className="w-full h-48 object-cover" />
 
-      {/* Text content */}
-      <div className="p-4 flex-1 flex flex-col">
-        {/* Type tag */}
-        <span
-          className={`inline-block px-3 py-1 text-xs font-semibold text-white rounded-full ${typeColors[type]} mb-2`}
-        >
-          {type.toUpperCase()}
-        </span>
+      {/* Content */}
+      <div className="p-4 flex flex-col flex-grow">
+
+        {/* Type Tag */}
+        <div className="flex items-center justify-between mb-2">
+          {/* Left - type pill */}
+          <span
+            className={`inline-block px-3 py-1 rounded-full text-xs font-semibold text-white
+              ${type === "cafe" ? "bg-[#A9745B]" :
+                type === "study" ? "bg-[#8FBF8F]" :
+                  "bg-[#82B0D8]"}
+  `}
+          >
+            {type.toUpperCase()}
+          </span>
+
+          {/* Right - MapPin icon */}
+          {MapIcon && (
+            <MapIcon className="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700" />
+          )}
+        </div>
+
 
         {/* Title */}
         <h3 className="text-lg font-bold text-gray-900">{title}</h3>
 
-        {/* AI Summary */}
+        {/* Summary */}
         <p className="text-sm text-gray-600 mt-2 line-clamp-3">{summary}</p>
 
-        {/* Metadata */}
-        <div className="flex gap-4 text-gray-500 text-sm mt-3">
-          {metadata.map((meta, i) => (
-            <span key={i}>{meta}</span>
-          ))}
+        {/* Meta Row (icons) */}
+        <div className="flex gap-3 mt-3 text-[#6B4F37]">
+          {metadata.map((item) => {
+            const Icon = IconMap[item];
+            return Icon ? (
+              <div key={item} className="relative group">
+                <Icon className="w-5 h-5 cursor-pointer" />
+                <span
+                  className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block 
+            whitespace-nowrap bg-[#FAF9F6] text-[#6B4F37] text-xs px-2 py-1 rounded-md shadow-md"
+                >
+                  {item}
+                </span>
+              </div>
+            ) : null;
+          })}
         </div>
 
-        {/* Reaction row */}
 
-        <div
-          className="mt-4 flex justify-center items-center h-8 relative cursor-pointer"
-          onMouseEnter={() => setShowReactions(true)}
-          onMouseLeave={() => setShowReactions(false)}
-          onClick={() => setShowReactions((prev) => !prev)}
-        >
-          {/* Default ghost text */}
-          <span
-            className={`absolute transition-opacity duration-200 text-sm text-gray-400 ${showReactions ? "opacity-0" : "opacity-100"
-              }`}
-          >
-            How do you feel?
-          </span>
-
-          {/* Reaction emojis */}
-          <div
-            className={`flex gap-4 transition-all duration-300 ${showReactions
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-2 pointer-events-none"
-              }`}
-          >
-            <button className="text-gray-500 text-lg transition transform hover:scale-125 hover:text-yellow-400" title="Insight">
-              💡
-            </button>
-            <button className="text-gray-500 text-lg transition transform hover:scale-125 hover:text-blue-500" title="Helpful">
-              👏
-            </button>
-            <button className="text-gray-500 text-lg transition transform hover:scale-125 hover:text-red-500" title="Loved it">
-              ❤️
-            </button>
-            <button className="text-gray-500 text-lg transition transform hover:scale-125 hover:text-orange-600" title="Oh no!">
-              😖
-            </button>
+        {/* Reaction Row */}
+        <div className="mt-4 text-sm text-gray-500 text-center group">
+          <p>How do you feel?</p>
+          <div className="flex justify-center gap-6 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            {reactions.map((emoji) => (
+              <span
+                key={emoji}
+                onClick={() => handleClick(emoji)}
+                className={`cursor-pointer text-2xl transition-transform
+          hover:scale-125
+          ${active === emoji ? "scale-125 drop-shadow-md" : ""}`}
+              >
+                {emoji}
+              </span>
+            ))}
           </div>
         </div>
-
       </div>
     </div>
   );
