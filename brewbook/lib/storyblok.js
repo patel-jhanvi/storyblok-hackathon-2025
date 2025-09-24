@@ -1,12 +1,21 @@
-// lib/storyblok.js
 import { storyblokInit, apiPlugin } from "@storyblok/react";
 
+let isInitialized = false;
+
 export function initStoryblok() {
-  storyblokInit({
-    accessToken: process.env.STORYBLOK_TOKEN,
-    use: [apiPlugin],
-    components: {
-      // Hero, card_grid: CardGrid, etc.
-    },
-  });
+  if (isInitialized) return;
+
+  try {
+    storyblokInit({
+      accessToken: process.env.NEXT_PUBLIC_STORYBLOK_TOKEN,
+      use: [apiPlugin],
+      components: {
+        // Components will be handled directly in pages, not here
+      },
+    });
+    isInitialized = true;
+    console.log("Storyblok initialized successfully");
+  } catch (error) {
+    console.error("Failed to initialize Storyblok:", error);
+  }
 }
