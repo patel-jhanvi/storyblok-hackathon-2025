@@ -1,18 +1,100 @@
+import Image from "next/image";
+import { IconMap } from "../ui/IconMap";
+import { useState } from "react";
+
 interface CardProps {
-    title: string;
-    description: string;
-    image: string;
-  }
-  
-  export default function Card({ title, description, image }: CardProps) {
-    return (
-      <div className="rounded-lg shadow-md overflow-hidden bg-white border border-gray-200">
-        <img src={image} alt={title} className="w-full h-20 object-cover" />
-        <div className="p-4">
-          <h3 className="text-lg font-bold">{title}</h3>
-          <p className="text-gray-600 text-sm mt-2">{description}</p>
+  type: "cafe" | "meetup" | "study";
+  title: string;
+  summary: string;
+  image: string;
+  metadata: string[];
+}
+
+
+export default function Card({ type, title, summary, image, metadata }: CardProps) {
+  const reactions = ["💡", "👏", "❤️", "😖"];
+  const [active, setActive] = useState<string | null>(null);
+
+  const MapIcon = IconMap["location"] as React.ComponentType<any> | undefined;
+
+  const handleClick = (emoji: string) => {
+    setActive(emoji);
+    // reset highlight after 800ms
+    setTimeout(() => setActive(null), 800);
+  };
+
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+      {/* Image */}
+      <Image src={image} alt={title} width={400} height={225} className="w-full h-48 object-cover" />
+
+      {/* Content */}
+      <div className="p-4 flex flex-col flex-grow">
+
+        {/* Type Tag */}
+        <div className="flex items-center justify-between mb-2">
+          {/* Left - type pill */}
+          <span
+            className={`inline-block px-3 py-1 rounded-full text-xs font-semibold text-white
+              ${type === "cafe" ? "bg-[#A9745B]" :
+                type === "study" ? "bg-[#8FBF8F]" :
+                  "bg-[#82B0D8]"}
+  `}
+          >
+            {type.toUpperCase()}
+          </span>
+
+          {/* Right - MapPin icon */}
+          {MapIcon && (
+            <MapIcon className="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700" />
+          )}
+        </div>
+
+
+        {/* Title */}
+        <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+
+        {/* Summary */}
+        <p className="text-sm text-gray-600 mt-2 line-clamp-3">{summary}</p>
+
+        {/* Meta Row (icons) */}
+        <div className="flex gap-3 mt-3 text-[#6B4F37]">
+          {metadata.map((item) => {
+            const Icon = IconMap[item];
+            return Icon ? (
+              <div key={item} className="relative group">
+                <Icon className="w-5 h-5 cursor-pointer" />
+                <span
+                  className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block 
+            whitespace-nowrap bg-[#FAF9F6] text-[#6B4F37] text-xs px-2 py-1 rounded-md shadow-md"
+                >
+                  {item}
+                </span>
+              </div>
+            ) : null;
+          })}
+        </div>
+
+
+        {/* Reaction Row */}
+        <div className="mt-4 text-sm text-gray-500 text-center group">
+          <p>How do you feel?</p>
+          <div className="flex justify-center gap-6 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            {reactions.map((emoji) => (
+              <span
+                key={emoji}
+                onClick={() => handleClick(emoji)}
+                className={`cursor-pointer text-2xl transition-transform
+          hover:scale-125
+          ${active === emoji ? "scale-125 drop-shadow-md" : ""}`}
+              >
+                {emoji}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
-    );
-  }
-  
+    </div>
+  );
+}
