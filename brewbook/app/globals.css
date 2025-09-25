@@ -3,3 +3,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Storyblok Visual Editor Styles - Only show in Visual Editor mode */
+.storyblok__outline [data-blok-c]:hover {
+  outline: 2px solid #10b981 !important;
+  outline-offset: 2px !important;
+}
+
+.storyblok__outline [data-blok-c] {
+  position: relative;
+}
+
+.storyblok__outline [data-blok-c]:before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid #10b981;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.storyblok__outline [data-blok-c]:hover:before {
+  border-color: #059669;
+}

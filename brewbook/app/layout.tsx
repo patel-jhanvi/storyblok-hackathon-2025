@@ -1,5 +1,5 @@
 import "./globals.css";
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import { initStoryblok } from "../lib/storyblok";
 import Navbar from "@/components/layout/navbar";
 
@@ -15,9 +15,16 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <script src="https://app.storyblok.com/f/storyblok-v2-latest.js" async />
+      </head>
       <body className="antialiased bg-white text-gray-900">
         <Navbar />
-        <main> {children} </main>
+        <main>
+          <Suspense fallback={<div>Loading...</div>}>
+            {children}
+          </Suspense>
+        </main>
       </body>
     </html>
   );

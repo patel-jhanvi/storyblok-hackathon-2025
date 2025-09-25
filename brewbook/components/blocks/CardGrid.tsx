@@ -1,76 +1,80 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { storyblokEditable } from "@storyblok/react";
 import Card from "../ui/Card";
+import { fetchStoriesSimple, ProcessedCardData } from "@/lib/storyblok-fetch";
 
-const mockData = [
-  {
-    type: "cafe" as const,
-    title: "Caffeine Hub",
-    summary: "A cozy café with reliable Wi-Fi and plenty of outlets with available working space.",
-    image: "/images/cafe.png",
-    metadata: ["wifi", "power", "quiet"],
-  },
-  {
-    type: "meetup" as const,
-    title: "Code & Coffee Meetup",
-    summary: "Weekly developer meetup for networking & hacking.",
-    image: "/images/meetup.png",
-    metadata: ["date", "host", "price"],
-  },
-  {
-    type: "study" as const,
-    title: "Study Loft",
-    summary: "Quiet study spot with natural light and group seating.",
-    image: "/images/study.png",
-    metadata: ["seating", "quiet", "hours"],
-  },
-  // ➕ add more dummy items so we can test "View More"
-  {
-    type: "cafe" as const,
-    title: "Java Junction",
-    summary: "Perfect for long focus sessions with strong coffee.",
-    image: "/images/cafe.png",
-    metadata: ["wifi", "power", "moderate"],
-  },
-  {
-    type: "study" as const,
-    title: "Library Nook",
-    summary: "Group seating and plenty of quiet corners.",
-    image: "/images/study.png",
-    metadata: ["ambience", "seating", "quiet"],
-  },
-  {
-    type: "meetup" as const,
-    title: "Tech Friday",
-    summary: "Networking and AI workshops every week.",
-    image: "/images/meetup.png",
-    metadata: ["date", "host", "price", "free"],
-  },
-];
+interface CardGridProps {
+  blok?: {
+    _uid: string;
+    component: string;
+    title?: string;
+  };
+}
 
-export default function CardGrid() {
-  const [visibleCount, setVisibleCount] = useState(6); // show 6 cards first
+export default function CardGrid({ blok }: CardGridProps) {
+  const [data, setData] = useState<ProcessedCardData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(6);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const stories = await fetchStoriesSimple();
+        setData(stories);
+      } catch (error) {
+        console.error('Failed to load stories:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, []);
 
   const handleViewMore = () => {
-    setVisibleCount((prev) => prev + 6); // load 6 more
+    setVisibleCount((prev) => prev + 6);
   };
 
+  if (loading) {
+    return (
+      <section className="p-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, index) => (
+            <div key={index} className="bg-gray-200 animate-pulse rounded-lg h-64"></div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className="p-8">
+    <section {...(blok ? storyblokEditable(blok) : {})} className="p-8">
+      {blok?.title && (
+        <h2 className="text-3xl font-bold text-center mb-8 text-[#6B4026]">
+          {blok.title}
+        </h2>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {mockData.slice(0, visibleCount).map((item, index) => (
-          <Card key={index} {...item} />
+        {data.slice(0, visibleCount).map((item, index) => (
+          <Card key={item.slug || index} {...item} />
         ))}
       </div>
 
-      {/* View More link */}
-      {visibleCount < mockData.length && (
+      {data.length === 0 && (
+        <div className="text-center text-gray-500 mt-8">
+          No stories found. Make sure to run the seeding script first.
+        </div>
+      )}
+
+      {visibleCount < data.length && (
         <div className="text-center mt-6">
           <span
             onClick={handleViewMore}
             className="cursor-pointer text-[#6B4026] font-medium hover:underline"
           >
-            View More
+            View More ({data.length - visibleCount} more)
           </span>
         </div>
       )}

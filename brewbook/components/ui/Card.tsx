@@ -3,7 +3,7 @@ import { IconMap } from "../ui/IconMap";
 import { useState } from "react";
 
 interface CardProps {
-  type: "cafe" | "meetup" | "study";
+  type: "cafe" | "event" | "study";
   title: string;
   summary: string;
   image: string;
@@ -38,6 +38,7 @@ export default function Card({ type, title, summary, image, metadata }: CardProp
           <span
             className={`inline-block px-3 py-1 rounded-full text-xs font-semibold text-white
               ${type === "cafe" ? "bg-[#A9745B]" :
+                type === "event" ? "bg-[#82B0D8]" :
                 type === "study" ? "bg-[#8FBF8F]" :
                   "bg-[#82B0D8]"}
   `}
@@ -58,21 +59,33 @@ export default function Card({ type, title, summary, image, metadata }: CardProp
         {/* Summary */}
         <p className="text-sm text-gray-600 mt-2 line-clamp-3">{summary}</p>
 
-        {/* Meta Row (icons) */}
-        <div className="flex gap-3 mt-3 text-[#6B4F37]">
-          {metadata.map((item) => {
-            const Icon = IconMap[item];
-            return Icon ? (
-              <div key={item} className="relative group">
-                <Icon className="w-5 h-5 cursor-pointer" />
+        {/* Meta Row (icons and text) */}
+        <div className="flex flex-wrap gap-2 mt-3 text-[#6B4F37]">
+          {metadata.map((item, idx) => {
+            const Icon = IconMap[item.toLowerCase()];
+            if (Icon) {
+              return (
+                <div key={idx} className="relative group">
+                  <Icon className="w-5 h-5 cursor-pointer" />
+                  <span
+                    className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block
+              whitespace-nowrap bg-[#FAF9F6] text-[#6B4F37] text-xs px-2 py-1 rounded-md shadow-md"
+                  >
+                    {item}
+                  </span>
+                </div>
+              );
+            } else {
+              // Display as text badge for items without icons
+              return (
                 <span
-                  className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block 
-            whitespace-nowrap bg-[#FAF9F6] text-[#6B4F37] text-xs px-2 py-1 rounded-md shadow-md"
+                  key={idx}
+                  className="bg-[#F5F5DC] text-[#6B4F37] text-xs px-2 py-1 rounded-full"
                 >
                   {item}
                 </span>
-              </div>
-            ) : null;
+              );
+            }
           })}
         </div>
 
