@@ -6,7 +6,7 @@ export default function Navbar() {
         <img
           src="/logos/brewbook-logo.png"
           alt="Brewbook Logo"
-          className="h-15 w-auto"
+          className="h-24 w-auto"
         />
       </div>
 
