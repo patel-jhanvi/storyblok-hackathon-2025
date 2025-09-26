@@ -47,10 +47,10 @@ To enable live preview and see the green highlight borders around editable compo
 
 When in preview mode, you'll see:
 
-✅ **Green highlight borders** around all editable components (hero, cards, etc.)
-✅ **Real-time updates** when content is changed in the editor
-✅ **No page reload required** - changes appear instantly
-✅ **Component-level editing** for precise content control
+**Green highlight borders** around all editable components (hero, cards, etc.)
+**Real-time updates** when content is changed in the editor
+**No page reload required** - changes appear instantly
+**Component-level editing** for precise content control
 
 ### Supported Components
 

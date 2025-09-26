@@ -71,7 +71,7 @@ class AlgoliaService {
   }
 
   /**
-   * Clear all objects from the index
+   * Clear all objects from the index (use with caution)
    */
   async clearIndex() {
     try {
@@ -90,24 +90,129 @@ class AlgoliaService {
   }
 
   /**
-   * Save objects to the index
-   * @param {Array} objects - Array of objects to index
-   * @returns {Object} Response from Algolia
+   * Get existing objects from the index to check for duplicates
+   * @returns {Array} Array of existing objects
    */
-  async saveObjects(objects) {
+  async getExistingObjects() {
     try {
-      this.logger.info(`Indexing ${objects.length} objects`);
+      const existingObjects = [];
 
+      await this.client.browseObjects({
+        indexName: this.config.indexName,
+        browseParams: {
+          query: ''
+        },
+        batch: (hits) => {
+          existingObjects.push(...hits);
+        }
+      });
+
+      this.logger.info(`Found ${existingObjects.length} existing objects in index`);
+      return existingObjects;
+
+    } catch (error) {
+      this.logger.error('Failed to browse existing objects', error);
+      return [];
+    }
+  }
+
+  /**
+   * Save objects to the index with upsert logic (update or create)
+   * @param {Array} objects - Array of objects to index
+   * @param {boolean} replaceAll - Whether to replace all existing data (default: false)
+   * @returns {Object} Response from Algolia with update/create statistics
+   */
+  async saveObjects(objects, replaceAll = false) {
+    try {
+      if (replaceAll) {
+        // Old behavior - clear and recreate
+        await this.clearIndex();
+        this.logger.info(`Indexing ${objects.length} objects (replace all)`);
+
+        const response = await this.client.saveObjects({
+          indexName: this.config.indexName,
+          objects: objects
+        });
+
+        this.logger.success(`Successfully indexed ${objects.length} objects`);
+        return { created: objects.length, updated: 0, response };
+      }
+
+      // New behavior - upsert logic
+      return await this.upsertObjects(objects);
+
+    } catch (error) {
+      this.logger.error('Failed to save objects to index', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Upsert objects - update existing, create new ones
+   * @param {Array} objects - Array of objects to upsert
+   * @returns {Object} Response with statistics
+   */
+  async upsertObjects(objects) {
+    try {
+      this.logger.info(`Upserting ${objects.length} objects`);
+
+      // Get existing objects to determine what to update vs create
+      const existingObjects = await this.getExistingObjects();
+      const existingIds = new Set(existingObjects.map(obj => obj.objectID));
+
+      const toUpdate = [];
+      const toCreate = [];
+
+      objects.forEach(obj => {
+        if (existingIds.has(obj.objectID)) {
+          toUpdate.push(obj);
+        } else {
+          toCreate.push(obj);
+        }
+      });
+
+      this.logger.info(`Objects to update: ${toUpdate.length}, Objects to create: ${toCreate.length}`);
+
+      // Save all objects (Algolia automatically handles updates/creates)
       const response = await this.client.saveObjects({
         indexName: this.config.indexName,
         objects: objects
       });
 
-      this.logger.success(`Successfully indexed ${objects.length} objects`);
+      this.logger.success(`Successfully upserted ${objects.length} objects (${toCreate.length} created, ${toUpdate.length} updated)`);
+
+      return {
+        created: toCreate.length,
+        updated: toUpdate.length,
+        total: objects.length,
+        response
+      };
+
+    } catch (error) {
+      this.logger.error('Failed to upsert objects', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Partial update objects by objectID
+   * @param {Array} updates - Array of partial update objects with objectID
+   * @returns {Object} Response from Algolia
+   */
+  async partialUpdateObjects(updates) {
+    try {
+      this.logger.info(`Partially updating ${updates.length} objects`);
+
+      const response = await this.client.partialUpdateObjects({
+        indexName: this.config.indexName,
+        objects: updates
+      });
+
+      this.logger.success(`Successfully updated ${updates.length} objects`);
       return response;
 
     } catch (error) {
-      this.logger.error('Failed to save objects to index', error);
+      this.logger.error('Failed to partially update objects', error);
       throw error;
     }
   }

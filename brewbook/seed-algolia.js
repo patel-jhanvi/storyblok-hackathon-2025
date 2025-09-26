@@ -69,9 +69,17 @@ class AlgoliaSeedingApp {
       });
 
       // Execute seeding with optional custom settings
+      const replaceAll = process.argv.includes('--replace-all');
       const result = await orchestrator.executeSeedingProcess({
-        indexSettings: this.getCustomIndexSettings()
+        indexSettings: this.getCustomIndexSettings(),
+        replaceAll: replaceAll
       });
+
+      if (replaceAll) {
+        this.logger.info('Running in replace-all mode - existing data will be cleared');
+      } else {
+        this.logger.info('Running in upsert mode - existing data will be updated/preserved');
+      }
 
       const endTime = process.hrtime.bigint();
       const totalDuration = Number(endTime - startTime) / 1000000; // Convert to milliseconds

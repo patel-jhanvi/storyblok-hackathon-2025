@@ -6,7 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "algolia:config": "node scripts/algolia-config.js",
+    "algolia:synonyms": "node -e \"require('./scripts/algolia-config.js').applySynonyms()\"",
+    "algolia:settings": "node -e \"require('./scripts/algolia-config.js').applyIndexSettings()\"",
+    "algolia:test": "node -e \"require('./scripts/algolia-config.js').testConfiguration()\"",
+    "seed:storyblok": "python3 storyblok_seed.py",
+    "seed:algolia": "node seed-algolia.js",
+    "seed:algolia:replace": "node seed-algolia.js --replace-all",
+    "seed:all": "npm run seed:storyblok && npm run seed:algolia",
+    "seed:all:replace": "npm run seed:storyblok && npm run seed:algolia:replace"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

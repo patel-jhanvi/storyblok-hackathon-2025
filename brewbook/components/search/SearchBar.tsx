@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { MapPin } from "lucide-react";
 
 export default function SearchBar() {
   const [keyword, setKeyword] = useState("");
@@ -46,7 +47,7 @@ export default function SearchBar() {
           className="px-2 text-[#6B4026] hover:text-[#4E2F1C]"
           title="Use my location"
         >
-          📍
+          <MapPin className="w-4 h-4" />
         </button>
 
         {/* Search button */}
