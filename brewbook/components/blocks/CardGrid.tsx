@@ -66,6 +66,7 @@ export default function CardGrid({ blok }: CardGridProps) {
             summary={item.summary}
             image={item.image}
             metadata={item.metadata || []}
+
           />
         ))}
       </div>
