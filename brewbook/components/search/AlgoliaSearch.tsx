@@ -53,8 +53,8 @@ function Hit({ hit }: { hit: Hit }) {
             <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold text-white mb-2
               ${hit.type === "cafe" ? "bg-[#A9745B]" :
                 hit.type === "event" ? "bg-[#82B0D8]" :
-                hit.type === "study" ? "bg-[#8FBF8F]" :
-                "bg-gray-500"}
+                  hit.type === "study" ? "bg-[#8FBF8F]" :
+                    "bg-gray-500"}
             `}>
               {hit.type.toUpperCase()}
             </span>
@@ -168,10 +168,8 @@ function HeroSearchBox() {
                   list: 'flex items-center gap-1',
                   item: 'inline-flex',
                   link: 'px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 hover:text-[#6B4026]',
-                  selectedItem: '',
-                  selectedLink: 'px-3 py-2 text-sm font-medium text-white bg-[#6B4026] border border-[#6B4026] rounded',
-                  disabledItem: '',
-                  disabledLink: 'px-3 py-2 text-sm font-medium text-gray-300 bg-gray-100 border border-gray-200 rounded cursor-not-allowed',
+                  selectedItem: 'px-3 py-2 text-sm font-medium text-white bg-[#6B4026] border border-[#6B4026] rounded',
+                  disabledItem: 'px-3 py-2 text-sm font-medium text-gray-300 bg-gray-100 border border-gray-200 rounded cursor-not-allowed',
                 }}
               />
             </div>
@@ -224,10 +222,8 @@ function FullPageSearch() {
             list: 'flex items-center gap-1',
             item: 'inline-flex',
             link: 'px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 hover:text-[#6B4026]',
-            selectedItem: '',
-            selectedLink: 'px-3 py-2 text-sm font-medium text-white bg-[#6B4026] border border-[#6B4026] rounded',
-            disabledItem: '',
-            disabledLink: 'px-3 py-2 text-sm font-medium text-gray-300 bg-gray-100 border border-gray-200 rounded cursor-not-allowed',
+            selectedItem: 'px-3 py-2 text-sm font-medium text-white bg-[#6B4026] border border-[#6B4026] rounded',
+            disabledItem: 'px-3 py-2 text-sm font-medium text-gray-300 bg-gray-100 border border-gray-200 rounded cursor-not-allowed',
           }}
         />
       </div>
