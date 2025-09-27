@@ -18,8 +18,15 @@ class StoryblokService {
     try {
       this.logger.info('Fetching stories from Storyblok API');
 
-      const url = `${this.config.baseUrl}/stories?token=${this.config.token}&version=draft&per_page=${this.config.perPage}`;
-      const response = await fetch(url);
+      // Try published first, then draft as fallback
+      let url = `${this.config.baseUrl}/stories?token=${this.config.token}&version=published&per_page=${this.config.perPage}`;
+      let response = await fetch(url);
+
+      if (!response.ok) {
+        this.logger.info('Published stories not found, trying draft version');
+        url = `${this.config.baseUrl}/stories?token=${this.config.token}&version=draft&per_page=${this.config.perPage}`;
+        response = await fetch(url);
+      }
 
       if (!response.ok) {
         throw new Error(`Storyblok API error: ${response.status} ${response.statusText}`);
@@ -29,6 +36,18 @@ class StoryblokService {
       const stories = data.stories || [];
 
       this.logger.success(`Retrieved ${stories.length} stories from Storyblok`);
+
+      // Log some debug info about the stories
+      if (stories.length > 0) {
+        this.logger.info(`First story example: ${JSON.stringify({
+          id: stories[0].id,
+          slug: stories[0].slug,
+          published_at: stories[0].published_at,
+          hasContent: !!stories[0].content,
+          hasBody: !!(stories[0].content && stories[0].content.body)
+        }, null, 2)}`);
+      }
+
       return stories;
 
     } catch (error) {

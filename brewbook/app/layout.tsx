@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="icon" href="/favicon.ico" />
         <script src="https://app.storyblok.com/f/storyblok-v2-latest.js" async />
       </head>
-      <body className="antialiased bg-white text-gray-900">
+      <body className="antialiased bg-white text-gray-900" suppressHydrationWarning={true}>
         <Navbar />
         <main>
           <Suspense fallback={<div>Loading...</div>}>

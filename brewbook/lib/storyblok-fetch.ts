@@ -15,7 +15,7 @@ export interface ProcessedCardData {
 export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
   try {
     const response = await fetch(
-      `https://api.storyblok.com/v2/cdn/stories?token=${process.env.NEXT_PUBLIC_STORYBLOK_TOKEN}&version=draft&starts_with=&is_startpage=false`
+      `https://api.storyblok.com/v2/cdn/stories?token=${process.env.NEXT_PUBLIC_STORYBLOK_TOKEN}&version=published&starts_with=&is_startpage=false`
     );
 
     if (!response.ok) {
@@ -62,15 +62,25 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
           tags.push(`★${metadata.rating}`);
         }
 
-        // Add opening hours if available
-        if (metadata?.opening_hours && Array.isArray(metadata.opening_hours)) {
-          const today = new Date().getDay(); // 0 = Sunday
-          const todayHours = metadata.opening_hours[today];
+        // Add opening hours if available and not empty (simplified)
+        if (metadata?.opening_hours) {
+          // Extract text from richtext format
+          let hoursText = '';
+          if (typeof metadata.opening_hours === 'string') {
+            hoursText = metadata.opening_hours;
+          } else if (metadata.opening_hours?.content?.[0]?.content?.[0]?.text) {
+            hoursText = metadata.opening_hours.content[0].content[0].text;
+          }
 
-          if (todayHours && todayHours.open && todayHours.close) {
-            tags.push(`${todayHours.open}-${todayHours.close}`);
-          } else {
-            tags.push("Open");
+          if (hoursText && hoursText.trim()) {
+            // Simplify opening hours display
+            if (hoursText.includes('08:00–18:00') || hoursText.includes('8:00-18:00')) {
+              tags.push('8AM-6PM');
+            } else if (hoursText.includes('7:00-19:00') || hoursText.includes('07:00-19:00')) {
+              tags.push('7AM-7PM');
+            } else {
+              tags.push('Open');
+            }
           }
         }
 

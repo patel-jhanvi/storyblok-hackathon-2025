@@ -246,7 +246,13 @@ export default function AlgoliaSearch({ isHeroMode = false }: AlgoliaSearchProps
   }
 
   return (
-    <InstantSearch searchClient={searchClient} indexName={indexName}>
+    <InstantSearch
+      searchClient={searchClient}
+      indexName={indexName}
+      future={{
+        preserveSharedStateOnUnmount: true,
+      }}
+    >
       <Configure hitsPerPage={10} />
       {isHeroMode ? <HeroSearchBox /> : <FullPageSearch />}
     </InstantSearch>

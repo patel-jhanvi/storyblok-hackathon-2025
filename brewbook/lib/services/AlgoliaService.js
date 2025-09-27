@@ -20,15 +20,24 @@ class AlgoliaService {
     return {
       searchableAttributes: [
         'title,name',
-        'description',
-        'location',
-        'tags',
+        'description,short_summary',
+        'address,city,location',
+        'tags,specialties',
+        'ai_tags,ai_summary',
         'type'
       ],
       attributesForFaceting: [
         'type',
-        'location',
-        'tags'
+        'city',
+        'tags',
+        'noise_level',
+        'seating_capacity',
+        'price_range',
+        'wifi',
+        'power_outlets',
+        'outdoor_seating',
+        'pet_friendly',
+        'open_now'
       ],
       customRanking: [
         'desc(rating)',
