@@ -1,6 +1,6 @@
 
 import { storyblokEditable } from "@storyblok/react";
-import SearchBar from "../search/SearchBar";
+import AlgoliaSearch from "../search/AlgoliaSearch";
 
 interface HeroProps {
   blok?: {
@@ -26,7 +26,7 @@ export default function Hero({ blok }: HeroProps) {
 
       {/* floating search bar */}
       <div className="absolute left-1/2 bottom-[-32px] transform -translate-x-1/2 w-full max-w-2xl">
-        <SearchBar />
+        <AlgoliaSearch isHeroMode={true} />
       </div>
     </section>
   );

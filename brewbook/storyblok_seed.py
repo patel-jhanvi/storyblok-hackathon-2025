@@ -5,10 +5,28 @@ import time
 import requests
 from typing import Dict, Any, Optional
 
+# Load environment variables from .env file
+def load_env_file():
+    try:
+        with open('.env', 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    key, value = line.split('=', 1)
+                    os.environ[key] = value
+    except FileNotFoundError:
+        print("Warning: .env file not found, using system environment variables")
+
+load_env_file()
+
 SPACE_ID = os.getenv("SB_SPACE_ID")
 PAT = os.getenv("SB_PAT")
 
 if not SPACE_ID or not PAT:
+    print("Available environment variables:")
+    for key in sorted(os.environ.keys()):
+        if 'SB_' in key or 'STORYBLOK' in key:
+            print(f"  {key}={os.environ[key][:20]}...")
     sys.exit("Missing SB_SPACE_ID or SB_PAT env vars.")
 
 BASE = f"https://mapi.storyblok.com/v1/spaces/{SPACE_ID}"

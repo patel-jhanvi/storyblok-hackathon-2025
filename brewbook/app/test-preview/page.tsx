@@ -59,7 +59,7 @@ export default function TestPreviewPage() {
       <div className="bg-blue-50 border-b border-blue-200 p-4">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-lg font-semibold text-blue-800">
-            🧪 Visual Editor Test Page
+            Visual Editor Test Page
           </h1>
           <p className="text-sm text-blue-600 mt-1">
             Story: <code className="bg-blue-100 px-2 py-1 rounded">{story.name}</code>
@@ -79,7 +79,7 @@ export default function TestPreviewPage() {
       <div className="bg-gray-50 border-t border-gray-200 p-8">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-lg font-semibold text-gray-800 mb-3">
-            🎯 How to Enable Visual Editor:
+            How to Enable Visual Editor:
           </h2>
           <ol className="space-y-2 text-sm text-gray-600">
             <li className="flex">

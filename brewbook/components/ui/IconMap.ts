@@ -1,4 +1,4 @@
-import FreeIcon from "./icons/FreeIcon";
+import FreeIcon from "./icons/FreeIcon.tsx";
 
 
 import {

@@ -1,6 +1,7 @@
 import { storyblokEditable } from "@storyblok/react";
 import Image from "next/image";
 import { render } from "storyblok-rich-text-react-renderer";
+import { MapPin, Star } from "lucide-react";
 
 interface CafeProps {
   blok: {
@@ -47,7 +48,7 @@ export default function Cafe({ blok }: CafeProps) {
 
         {blok.location && (
           <p className="text-gray-600 flex items-center">
-            <span className="mr-2">📍</span>
+            <MapPin className="w-4 h-4 mr-2" />
             {blok.location}
           </p>
         )}
@@ -68,7 +69,7 @@ export default function Cafe({ blok }: CafeProps) {
             )}
             {metadata.rating && (
               <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
-                ★{metadata.rating}
+                <Star className="w-4 h-4 mr-1" />{metadata.rating}
               </span>
             )}
             {metadata.opening_hours && (

@@ -39,7 +39,7 @@ class SeedingOrchestrator {
       }
 
       // Step 5: Index records in Algolia
-      const indexingResult = await this.indexRecords(records);
+      const indexingResult = await this.indexRecords(records, options.replaceAll);
 
       const duration = Date.now() - startTime;
       const result = {
@@ -152,14 +152,15 @@ class SeedingOrchestrator {
   }
 
   /**
-   * Index records in Algolia
+   * Index records in Algolia with upsert logic
    * @param {Array} records - Array of records to index
+   * @param {boolean} replaceAll - Whether to replace all existing data (default: false)
    * @returns {Object} Indexing result
    */
-  async indexRecords(records) {
+  async indexRecords(records, replaceAll = false) {
     if (records.length === 0) {
       this.logger.warn('No records to index');
-      return { indexed: 0, skipped: records.length };
+      return { indexed: 0, skipped: records.length, created: 0, updated: 0 };
     }
 
     // Validate records before indexing
@@ -169,16 +170,15 @@ class SeedingOrchestrator {
       this.logger.warn(`${validation.errors.length} records failed validation and will be skipped`);
     }
 
-    // Clear existing index
-    await this.algoliaService.clearIndex();
-
-    // Index valid records
-    const response = await this.algoliaService.saveObjects(validation.validObjects);
+    // Index valid records with upsert logic
+    const response = await this.algoliaService.saveObjects(validation.validObjects, replaceAll);
 
     return {
       indexed: validation.validObjects.length,
       skipped: validation.errors.length,
-      algoliaResponse: response
+      created: response.created || validation.validObjects.length,
+      updated: response.updated || 0,
+      algoliaResponse: response.response || response
     };
   }
 }

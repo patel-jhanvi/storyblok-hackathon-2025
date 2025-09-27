@@ -1,6 +1,7 @@
 import { storyblokEditable } from "@storyblok/react";
 import Image from "next/image";
 import { render } from "storyblok-rich-text-react-renderer";
+import { Calendar, MapPin, Star } from "lucide-react";
 
 interface EventProps {
   blok: {
@@ -56,13 +57,13 @@ export default function Event({ blok }: EventProps) {
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-gray-600">
           {blok.date && (
             <span className="flex items-center">
-              <span className="mr-2">📅</span>
+              <Calendar className="w-4 h-4 mr-2" />
               {eventDate.toLocaleDateString()} at {eventDate.toLocaleTimeString()}
             </span>
           )}
           {blok.location && (
             <span className="flex items-center">
-              <span className="mr-2">📍</span>
+              <MapPin className="w-4 h-4 mr-2" />
               {blok.location}
             </span>
           )}
@@ -84,7 +85,7 @@ export default function Event({ blok }: EventProps) {
             )}
             {metadata.rating && (
               <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
-                ★{metadata.rating}
+                <Star className="w-4 h-4 mr-1" />{metadata.rating}
               </span>
             )}
           </div>

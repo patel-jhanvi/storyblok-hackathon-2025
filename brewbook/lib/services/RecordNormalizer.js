@@ -113,7 +113,11 @@ class RecordNormalizer {
     record.title = component.name;
     record.name = component.name;
     record.location = component.location || '';
-    record.description = this.extractRichtextContent(component.description);
+
+    // Extract description and create summary for search compatibility
+    const fullDescription = this.extractRichtextContent(component.description);
+    record.description = fullDescription;
+    record.summary = this.createSummary(fullDescription); // For search component compatibility
 
     if (component.image?.filename) {
       record.image = component.image.filename;
@@ -135,7 +139,11 @@ class RecordNormalizer {
 
     record.title = component.title;
     record.location = component.location || '';
-    record.description = this.extractRichtextContent(component.description);
+
+    // Extract description and create summary for search compatibility
+    const fullDescription = this.extractRichtextContent(component.description);
+    record.description = fullDescription;
+    record.summary = this.createSummary(fullDescription); // For search component compatibility
     record.date = component.date;
 
     if (component.image?.filename) {
@@ -172,6 +180,36 @@ class RecordNormalizer {
   }
 
   /**
+   * Create a summary from full description (truncated for search results)
+   * @param {string} description - Full description text
+   * @param {number} maxLength - Maximum length for summary
+   * @returns {string} Truncated summary
+   */
+  createSummary(description, maxLength = 150) {
+    if (!description) return '';
+
+    if (description.length <= maxLength) {
+      return description;
+    }
+
+    // Find the last complete sentence within the limit
+    const truncated = description.substring(0, maxLength);
+    const lastSentence = truncated.lastIndexOf('.');
+
+    if (lastSentence > maxLength * 0.7) {
+      return truncated.substring(0, lastSentence + 1);
+    }
+
+    // If no good sentence break, truncate at word boundary
+    const lastSpace = truncated.lastIndexOf(' ');
+    if (lastSpace > maxLength * 0.8) {
+      return truncated.substring(0, lastSpace) + '...';
+    }
+
+    return truncated + '...';
+  }
+
+  /**
    * Add metadata fields to record
    * @param {Object} record - Record to add metadata to
    * @param {Array} metadata - Metadata array from component
@@ -179,13 +217,17 @@ class RecordNormalizer {
   addMetadata(record, metadata) {
     if (!metadata || !Array.isArray(metadata) || metadata.length === 0) {
       record.tags = [];
+      record.metadata = []; // For search component compatibility
       record.opening_hours = '';
       record.rating = null;
       return;
     }
 
     const meta = metadata[0];
-    record.tags = meta.tags ? meta.tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
+    const tags = meta.tags ? meta.tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
+
+    record.tags = tags;
+    record.metadata = tags; // For search component compatibility
     record.opening_hours = meta.opening_hours || '';
     record.rating = typeof meta.rating === 'number' ? meta.rating : null;
   }

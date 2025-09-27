@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { IconMap } from "../ui/IconMap";
 import { useState } from "react";
+import { ThumbsUp, Hand, Heart, Frown } from "lucide-react";
 
 interface CardProps {
   type: "cafe" | "event" | "study";
@@ -12,13 +13,18 @@ interface CardProps {
 
 
 export default function Card({ type, title, summary, image, metadata }: CardProps) {
-  const reactions = ["💡", "👏", "❤️", "😖"];
+  const reactions = [
+    { name: "+1", icon: ThumbsUp },
+    { name: "clap", icon: Hand },
+    { name: "heart", icon: Heart },
+    { name: "sad", icon: Frown }
+  ];
   const [active, setActive] = useState<string | null>(null);
 
   const MapIcon = IconMap["location"] as React.ComponentType<any> | undefined;
 
-  const handleClick = (emoji: string) => {
-    setActive(emoji);
+  const handleClick = (reactionName: string) => {
+    setActive(reactionName);
     // reset highlight after 800ms
     setTimeout(() => setActive(null), 800);
   };
@@ -94,17 +100,18 @@ export default function Card({ type, title, summary, image, metadata }: CardProp
         <div className="mt-4 text-sm text-gray-500 text-center group">
           <p>How do you feel?</p>
           <div className="flex justify-center gap-6 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            {reactions.map((emoji) => (
-              <span
-                key={emoji}
-                onClick={() => handleClick(emoji)}
-                className={`cursor-pointer text-2xl transition-transform
-          hover:scale-125
-          ${active === emoji ? "scale-125 drop-shadow-md" : ""}`}
-              >
-                {emoji}
-              </span>
-            ))}
+            {reactions.map((reaction) => {
+              const Icon = reaction.icon;
+              return (
+                <Icon
+                  key={reaction.name}
+                  onClick={() => handleClick(reaction.name)}
+                  className={`cursor-pointer w-6 h-6 transition-transform text-gray-500 hover:text-gray-700
+            hover:scale-125
+            ${active === reaction.name ? "scale-125 drop-shadow-md text-gray-700" : ""}`}
+                />
+              );
+            })}
           </div>
         </div>
       </div>

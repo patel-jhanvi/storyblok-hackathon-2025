@@ -29,12 +29,12 @@ node seed-algolia.js
 
 ## Requirements Met
 
-- ✅ 10+ café records with objectID, title, slug, type
-- ✅ 3+ event records with objectID, title, slug, type
-- ✅ Clean logging without emojis
-- ✅ Component-based architecture
-- ✅ Proper error handling and validation
-- ✅ Organized code structure
+- 10+ café records with objectID, title, slug, type
+- 3+ event records with objectID, title, slug, type
+- Clean logging without emojis
+- Component-based architecture
+- Proper error handling and validation
+- Organized code structure
 
 ## Environment Variables Required
 
