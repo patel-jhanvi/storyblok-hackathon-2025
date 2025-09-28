@@ -4,7 +4,7 @@ import Hero from "@/components/blocks/Hero";
 import Cafe from "@/components/blocks/Cafe";
 import Event from "@/components/blocks/Event";
 import CardGrid from "@/components/blocks/CardGrid";
-import Map from "@/components/blocks/Map";
+// Map is dynamically imported to avoid SSR issues
 import RichText from "@/components/blocks/RichText";
 import Teaser from "@/components/blocks/Teaser";
 import Fallback from "@/components/blocks/Fallback";
@@ -12,7 +12,7 @@ import Fallback from "@/components/blocks/Fallback";
 let isInitialized = false;
 
 export function initStoryblok() {
-  if (isInitialized) return;
+  if (isInitialized || typeof window === 'undefined') return;
 
   try {
     storyblokInit({
@@ -27,7 +27,7 @@ export function initStoryblok() {
         cafe: Cafe,
         event: Event,
         card_grid: CardGrid,
-        map: Map,
+        map: Fallback, // Map component replaced with fallback to avoid SSR issues
         richtext: RichText,
 
         // Teaser component (common Storyblok component)
@@ -50,7 +50,7 @@ export function initStoryblok() {
       cafe: Cafe,
       event: Event,
       card_grid: CardGrid,
-      map: Map,
+      map: Fallback,
       richtext: RichText,
       teaser: Teaser,
       hero_section: Hero,

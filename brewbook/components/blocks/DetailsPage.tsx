@@ -55,11 +55,14 @@ export default function DetailPage({
 
                 {/* Amenities */}
                 <div className="flex flex-wrap gap-4 mt-4">
-                    {amenities.map((a, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                            {IconMap[a]} <span className="sr-only">{a}</span>
-                        </div>
-                    ))}
+                    {amenities.map((a, i) => {
+                        const IconComponent = IconMap[a];
+                        return (
+                            <div key={i} className="flex items-center gap-2">
+                                {IconComponent && <IconComponent className="w-5 h-5" />} <span className="sr-only">{a}</span>
+                            </div>
+                        );
+                    })}
                 </div>
 
                 {/* Reviews */}

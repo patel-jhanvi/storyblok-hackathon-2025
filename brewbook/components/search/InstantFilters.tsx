@@ -51,8 +51,8 @@ function WorkFriendlyFilter() {
   const powerTrueItem = powerItems.find(item => item.label === 'true');
 
   // Check if both are selected
-  const bothSelected = wifiTrueItem?.isRefined && powerTrueItem?.isRefined;
-  const anySelected = wifiTrueItem?.isRefined || powerTrueItem?.isRefined;
+  const bothSelected = !!(wifiTrueItem?.isRefined && powerTrueItem?.isRefined);
+  const anySelected = !!(wifiTrueItem?.isRefined || powerTrueItem?.isRefined);
 
   const handleToggle = () => {
     if (bothSelected) {

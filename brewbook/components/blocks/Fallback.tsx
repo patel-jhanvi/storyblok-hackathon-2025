@@ -11,7 +11,7 @@ interface FallbackProps {
 export default function Fallback({ blok }: FallbackProps) {
   return (
     <div
-      {...storyblokEditable(blok)}
+      {...storyblokEditable(blok as any)}
       className="fallback-component p-4 border-2 border-dashed border-yellow-400 bg-yellow-50 rounded-lg"
     >
       <div className="text-center">

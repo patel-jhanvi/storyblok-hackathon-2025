@@ -5,6 +5,8 @@ import { StoryblokComponent } from "@storyblok/react";
 import { PageLoadingScreen } from "@/components/ui/LoadingScreen";
 import { initStoryblok } from "@/lib/storyblok";
 
+export const dynamic = 'force-dynamic';
+
 export default function PreviewPage() {
   const searchParams = useSearchParams();
   const [story, setStory] = useState<Record<string, unknown> | null>(null);
@@ -114,7 +116,7 @@ export default function PreviewPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF9F6]">
-      {story.content?.body?.map((blok: Record<string, unknown>) => (
+      {(story.content as any)?.body?.map((blok: Record<string, unknown>) => (
         <StoryblokComponent blok={blok} key={blok._uid as string} />
       ))}
     </div>

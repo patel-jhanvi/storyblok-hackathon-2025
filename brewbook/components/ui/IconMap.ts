@@ -1,5 +1,5 @@
 import React from "react";
-import FreeIcon from "./icons/FreeIcon.tsx";
+import FreeIcon from "./icons/FreeIcon";
 
 
 import {

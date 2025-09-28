@@ -5,6 +5,7 @@ Coffee shops and events discovery app for developers. Built with Next.js, Storyb
 ## Quick Start
 
 1. **Clone & Install**
+
    ```bash
    git clone <repo-url>
    cd brewbook
@@ -13,6 +14,7 @@ Coffee shops and events discovery app for developers. Built with Next.js, Storyb
 
 2. **Environment Setup**
    Create `.env` file:
+
    ```env
    STORYBLOK_TOKEN=your_preview_token
    NEXT_PUBLIC_STORYBLOK_TOKEN=your_public_token
@@ -22,6 +24,7 @@ Coffee shops and events discovery app for developers. Built with Next.js, Storyb
    ```
 
 3. **Seed Data**
+
    ```bash
    npm run seed:storyblok    # Seed Storyblok with sample data
    npm run seed:algolia      # Index content to Algolia
@@ -45,7 +48,6 @@ Coffee shops and events discovery app for developers. Built with Next.js, Storyb
 - `/` - Homepage with search
 - `/cafe/[slug]` - Cafe detail pages
 - `/event/[slug]` - Event detail pages
-- `/preview` - Storyblok preview mode
 
 ## Development
 
@@ -62,6 +64,7 @@ Enable live editing by adding `?_storyblok` to any URL. Content types: Page, Her
 ## Algolia Search
 
 Configure search index and synonyms:
+
 ```bash
 npm run algolia:config     # Setup index
 npm run algolia:test       # Test configuration

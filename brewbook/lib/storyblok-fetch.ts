@@ -38,7 +38,7 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
 
         if (!isEvent && !isCafe) return null;
 
-        const metadata = bodyContent.metadata?.[0];
+        const metadata = (bodyContent as any).metadata?.[0];
         const tags: string[] = [];
 
         // Add meaningful tags from the metadata
@@ -52,8 +52,8 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
         }
 
         // Add location (city only, without country code)
-        if (bodyContent.location) {
-          const cityName = bodyContent.location.split(',')[0].trim();
+        if ((bodyContent as any).location) {
+          const cityName = (bodyContent as any).location.split(',')[0].trim();
           tags.push(cityName);
         }
 
@@ -124,17 +124,17 @@ export function processSingleStory(story: { content: { body?: Array<{ component:
     tags.push(...meaningfulTags);
   }
 
-  if (bodyContent?.location) {
-    const cityName = bodyContent.location.split(",")[0].trim();
+  if ((bodyContent as any)?.location) {
+    const cityName = (bodyContent as any).location.split(",")[0].trim();
     tags.push(cityName);
   }
 
-  if (metadata?.rating) {
-    tags.push(`★${metadata.rating}`);
+  if ((metadata as any)?.rating) {
+    tags.push(`★${(metadata as any).rating}`);
   }
 
-  if (metadata?.opening_hours && metadata.opening_hours.trim()) {
-    if (metadata.opening_hours.includes("08:00–18:00")) {
+  if ((metadata as any)?.opening_hours && (metadata as any).opening_hours.trim()) {
+    if ((metadata as any).opening_hours.includes("08:00–18:00")) {
       tags.push("8AM-6PM");
     } else {
       tags.push("Open");
@@ -143,11 +143,11 @@ export function processSingleStory(story: { content: { body?: Array<{ component:
 
   return {
     type: isEvent ? "event" : "cafe",
-    title: bodyContent?.name || bodyContent?.title || story.name,
+    title: (bodyContent as any)?.name || (bodyContent as any)?.title || (story as any).name,
     summary:
-      bodyContent?.description?.content?.[0]?.content?.[0]?.text ||
+      (bodyContent as any)?.description?.content?.[0]?.content?.[0]?.text ||
       `A ${isEvent ? "great event" : "cozy cafe"} to visit.`,
-    image: bodyContent?.image?.filename || "/images/placeholder.png",
+    image: (bodyContent as any)?.image?.filename || "/images/placeholder.png",
     metadata: tags.slice(0, 5),
     slug: story.slug,
     address: story.content.address || "",

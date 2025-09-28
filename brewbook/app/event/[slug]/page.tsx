@@ -56,7 +56,11 @@ export default async function EventDetailPage({
 
   if (eventLocation) {
     console.log("Event location:", eventLocation);
-    coords = await geocodeAddress(eventLocation);
+    const geocodeResult = await geocodeAddress(eventLocation);
+    coords = {
+      lat: geocodeResult.lat ?? 0,
+      lng: geocodeResult.lng ?? 0
+    };
   }
 
   const event = {

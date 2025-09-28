@@ -80,7 +80,7 @@ export async function fetchStoryblokStories(): Promise<ProcessedCardData[]> {
         return {
           type: isEvent ? 'event' : 'cafe',
           title: bodyContent.name || bodyContent.title || story.name,
-          summary: bodyContent.description?.content?.[0]?.content?.[0]?.text || `A ${isEvent ? 'great event' : 'cozy cafe'} to visit.`,
+          summary: (bodyContent.description as any)?.content?.[0]?.content?.[0]?.text || `A ${isEvent ? 'great event' : 'cozy cafe'} to visit.`,
           image: bodyContent.image?.filename || '/images/placeholder.png',
           metadata: tags.slice(0, 5), // Limit to 5 tags to prevent overflow
           slug: story.slug,

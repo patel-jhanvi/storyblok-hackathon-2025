@@ -63,8 +63,8 @@ export default async function CafeDetailPage({
     image: bodyContent?.image?.filename || "/images/placeholder.png",
     address: bodyContent?.location || story.content.location,
     amenities: bodyContent?.amenities || [],
-    lat: coords.lat,
-    lng: coords.lng,
+    lat: coords.lat ?? 0,
+    lng: coords.lng ?? 0,
   };
 
   return <CafeDetailClient cafe={cafe} />;

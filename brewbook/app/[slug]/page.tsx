@@ -98,9 +98,9 @@ export default function SlugPage() {
     );
   }
 
-  const contentBlok = story.content.body?.[0];
-  const isCafe = contentBlok?.component === 'cafe';
-  const isEvent = contentBlok?.component === 'event';
+  const contentBlok = story.content.body?.[0] || story.content;
+  const isCafe = (contentBlok as any)?.component === 'cafe' || (story.content as any).component === 'cafe';
+  const isEvent = (contentBlok as any)?.component === 'event' || (story.content as any).component === 'event';
 
   return (
     <div {...storyblokEditable(story)} className={`min-h-screen bg-gray-50 ${isPreview ? 'storyblok__outline' : ''}`}>
@@ -117,13 +117,13 @@ export default function SlugPage() {
           {story.name}
         </h1>
 
-        {isCafe && <Cafe blok={contentBlok} />}
-        {isEvent && <Event blok={contentBlok} />}
+        {isCafe && <Cafe blok={story.content as any} />}
+        {isEvent && <Event blok={story.content as any} />}
 
         <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <h3 className="font-semibold text-blue-800 mb-2">Debug Info:</h3>
           <p className="text-sm text-blue-700">
-            Story: {story.slug} | Component: {contentBlok?.component}
+            Story: {story.slug} | Component: {(contentBlok as any)?.component}
           </p>
         </div>
       </div>
