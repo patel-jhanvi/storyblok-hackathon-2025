@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
 import Overview from "@/components/cafe/Overview";
-import { useState } from "react";
 import { ComponentLoadingScreen } from "@/components/ui/LoadingScreen";
 import FloatingBackButton from "@/components/ui/FloatingBackButton";
 import { geocodeAddress } from "@/lib/utils/geocode";
@@ -198,28 +197,17 @@ export default function CafeDetailClient({ cafe }: { cafe: Cafe }) {
                                 onClick={() =>
                                     window.open(
                                         `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                            cafe.address || `${cafe.lat},${cafe.lng}`
+                                            cafe.address || `${coordinates.lat},${coordinates.lng}`
                                         )}`,
                                         "_blank"
                                     )
                                 }
-                                className="flex items-center gap-2 text-left"
+                                className="flex items-center gap-2 text-left hover:text-blue-600"
                             >
                                 <MapPin className="w-4 h-4 text-[#6B4F37]" />
                                 {cafe.address}
                             </button>
                         </div>
-                        <a
-                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                cafe.address || `${coordinates.lat},${coordinates.lng}`
-                            )}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-600 flex items-center gap-2 hover:text-blue-600"
-                        >
-                            <MapPin className="w-4 h-4 text-[#6B4F37]" />
-                            {cafe.address}
-                        </a>
                     </div>
                 </div>
             </div>

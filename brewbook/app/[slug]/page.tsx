@@ -6,16 +6,6 @@ import { initStoryblok } from "@/lib/storyblok";
 import Cafe from "@/components/blocks/Cafe";
 import Event from "@/components/blocks/Event";
 
-// Extend Window interface for Storyblok bridge
-declare global {
-  interface Window {
-    storyblok: {
-      init: (config: { accessToken?: string }) => void;
-      on: (events: string[], callback: (event: { action: string; story: { id: string; name: string; slug: string; content: { body?: Array<{ component: string }> } } }) => void) => void;
-    };
-  }
-}
-
 export default function SlugPage() {
   const params = useParams();
   const searchParams = useSearchParams();

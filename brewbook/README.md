@@ -2,13 +2,19 @@
 
 Our coffee shops and events discovery app for developers. We built it with Next.js, Storyblok CMS, and Algolia search.
 
+## Links
+
+- **Live Demo**: [https://storyblok-hackathon-2025.vercel.app/](https://storyblok-hackathon-2025.vercel.app/)
+- **GitHub Repository**: [https://github.com/patel-jhanvi/storyblok-hackathon-2025](https://github.com/patel-jhanvi/storyblok-hackathon-2025)
+- **Storyblok Space**: Space ID `287205350042106` (see live demo for public access)
+
 ## Quick Start
 
 1. **Let's Clone & Install**
 
    ```bash
-   git clone <repo-url>
-   cd brewbook
+   git clone https://github.com/patel-jhanvi/storyblok-hackathon-2025.git
+   cd storyblok-hackathon-2025/brewbook
    npm install
    ```
 

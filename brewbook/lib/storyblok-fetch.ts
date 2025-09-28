@@ -92,11 +92,11 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
           image: bodyContent.image?.filename || '/images/placeholder.png',
           metadata: tags.slice(0, 5), // Limit to 5 tags to prevent overflow
           slug: story.slug,
-          address: story.content.address,
-          lat: story.content.lat,
-          lng: story.content.lng,
-          amenities: story.content.amenities && story.content.amenities.length > 0
-            ? story.content.amenities
+          address: (bodyContent as any).address,
+          lat: (bodyContent as any).lat,
+          lng: (bodyContent as any).lng,
+          amenities: (bodyContent as any).amenities && (bodyContent as any).amenities.length > 0
+            ? (bodyContent as any).amenities
             : ["WiFi", "Power Outlets", "Pet Friendly"],
         };
       })
@@ -108,7 +108,7 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
 }
 
 // Single story processor (for detail pages)
-export function processSingleStory(story: { content: { body?: Array<{ component: string; metadata?: Array<{ tags?: string }> }> } }): ProcessedCardData {
+export function processSingleStory(story: { content: { body?: Array<{ component: string; metadata?: Array<{ tags?: string }> }> }; slug: string; name: string }): ProcessedCardData {
   const bodyContent = story.content.body?.[0];
   const isEvent = bodyContent?.component === "event";
   // const isCafe = bodyContent?.component === "cafe";
@@ -143,18 +143,18 @@ export function processSingleStory(story: { content: { body?: Array<{ component:
 
   return {
     type: isEvent ? "event" : "cafe",
-    title: (bodyContent as any)?.name || (bodyContent as any)?.title || (story as any).name,
+    title: (bodyContent as any)?.name || (bodyContent as any)?.title || story.name,
     summary:
       (bodyContent as any)?.description?.content?.[0]?.content?.[0]?.text ||
       `A ${isEvent ? "great event" : "cozy cafe"} to visit.`,
     image: (bodyContent as any)?.image?.filename || "/images/placeholder.png",
     metadata: tags.slice(0, 5),
     slug: story.slug,
-    address: story.content.address || "",
-    lat: story.content.lat || null,
-    lng: story.content.lng || null,
-    amenities: story.content.amenities && story.content.amenities.length > 0
-      ? story.content.amenities
+    address: (bodyContent as any)?.address || "",
+    lat: (bodyContent as any)?.lat || null,
+    lng: (bodyContent as any)?.lng || null,
+    amenities: (bodyContent as any)?.amenities && (bodyContent as any).amenities.length > 0
+      ? (bodyContent as any).amenities
       : ["WiFi", "Power Outlets", "Pet Friendly"],
   };
 }
