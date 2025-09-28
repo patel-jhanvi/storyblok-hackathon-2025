@@ -2,6 +2,7 @@ import "./globals.css";
 import { ReactNode, Suspense } from "react";
 import { initStoryblok } from "../lib/storyblok";
 import { Outfit, Berkshire_Swash } from "next/font/google";
+import Footer from "../components/layout/Footer";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             {children}
           </Suspense>
         </main>
+        <Footer />
       </body>
     </html>
   );
