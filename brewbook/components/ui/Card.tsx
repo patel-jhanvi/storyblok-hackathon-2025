@@ -91,11 +91,13 @@ export default function Card({
             >
               {type.toUpperCase()}
             </span>
-
             {MapIcon && (
               <button
                 type="button"
-                onClick={openMap}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.location.href = href; // manually route to detail page
+                }}
                 className="p-1 rounded hover:bg-gray-100"
               >
                 <MapIcon className="w-6 h-6 text-gray-500 hover:text-gray-700" />

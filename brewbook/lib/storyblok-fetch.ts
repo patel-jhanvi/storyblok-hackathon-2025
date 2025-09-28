@@ -85,7 +85,9 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
           address: story.content.address,
           lat: story.content.lat,
           lng: story.content.lng,
-          amenities: story.content.amenities || [],
+          amenities: story.content.amenities && story.content.amenities.length > 0
+            ? story.content.amenities
+            : ["WiFi", "Power Outlets", "Pet Friendly"],
         };
       })
       .filter(Boolean);
@@ -140,6 +142,8 @@ export function processSingleStory(story: any): ProcessedCardData {
     address: story.content.address || "",
     lat: story.content.lat || null,
     lng: story.content.lng || null,
-    amenities: story.content.amenities || [],
+    amenities: story.content.amenities && story.content.amenities.length > 0
+      ? story.content.amenities
+      : ["WiFi", "Power Outlets", "Pet Friendly"],
   };
 }
