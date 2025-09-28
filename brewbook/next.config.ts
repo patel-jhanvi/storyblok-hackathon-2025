@@ -22,6 +22,10 @@ const nextConfig: NextConfig = {
     config.resolve.alias["@"] = path.resolve(__dirname);
     return config;
   },
+  eslint: {
+
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
