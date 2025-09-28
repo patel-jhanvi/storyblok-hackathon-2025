@@ -14,6 +14,7 @@ import {
   Download
 } from "lucide-react";
 import { ComponentLoadingScreen } from "@/components/ui/LoadingScreen";
+import FloatingBackButton from "@/components/ui/FloatingBackButton";
 import { render } from "storyblok-rich-text-react-renderer";
 
 // Dynamically import MapBlock only on client
@@ -47,6 +48,8 @@ export default function EventDetailClient({ event }: EventDetailClientProps) {
 
     return (
         <div className="min-h-screen bg-[#FAF9F6]">
+            <FloatingBackButton label="Back to Home" />
+
             {/* Hero Section */}
             <div className="relative h-96 mb-8">
                 <Image

@@ -6,6 +6,7 @@ import { MapPin } from "lucide-react";
 import Overview from "@/components/cafe/Overview";
 import { useState } from "react";
 import { ComponentLoadingScreen } from "@/components/ui/LoadingScreen";
+import FloatingBackButton from "@/components/ui/FloatingBackButton";
 
 // Dynamically import MapBlock only on client
 const MapBlock = dynamic(() => import("@/components/blocks/Map"), {
@@ -39,7 +40,10 @@ export default function CafeDetailClient({ cafe }: { cafe: Cafe }) {
     };
 
     return (
-        <div className="p-8">
+        <div className="min-h-screen bg-[#FAF9F6]">
+            <FloatingBackButton label="Back to Home" />
+
+            <div className="p-8">
             <div className="grid grid-cols-3 gap-8">
                 {/* Left column */}
                 <div className="col-span-2 space-y-6">
@@ -181,6 +185,7 @@ export default function CafeDetailClient({ cafe }: { cafe: Cafe }) {
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     );
