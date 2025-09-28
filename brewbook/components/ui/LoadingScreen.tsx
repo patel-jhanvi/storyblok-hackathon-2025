@@ -50,6 +50,7 @@ export default function LoadingScreen({
               height={120}
               className="mx-auto"
               priority
+              unoptimized
             />
 
             {/* Floating steam particles */}
