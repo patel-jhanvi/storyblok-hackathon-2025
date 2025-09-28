@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import { storyblokEditable, getStoryblokApi } from "@storyblok/react";
+import { storyblokEditable } from "@storyblok/react";
 import { initStoryblok } from "@/lib/storyblok";
 import Cafe from "@/components/blocks/Cafe";
 import Event from "@/components/blocks/Event";
@@ -45,16 +45,19 @@ export default function SlugPage() {
 
     async function fetchStory() {
       try {
-        const storyblokApi = getStoryblokApi();
-        if (!storyblokApi) {
-          throw new Error("Storyblok API not initialized");
+        const token = process.env.NEXT_PUBLIC_STORYBLOK_TOKEN;
+        if (!token) {
+          throw new Error("Storyblok token not configured");
         }
 
-        const slug = Array.isArray(params.slug) ? params.slug.join("/") : params.slug;
+        const url = `https://api.storyblok.com/v2/cdn/stories/${slug}?token=${token}&version=draft`;
+        const response = await fetch(url);
 
-        const { data } = await storyblokApi.get(`cdn/stories/${slug}`, {
-          version: process.env.NODE_ENV === "production" ? "published" : "draft",
-        });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
         setStory(data.story);
       } catch (error) {
         console.error("Error fetching story:", error);

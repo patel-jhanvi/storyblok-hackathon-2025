@@ -5,10 +5,12 @@ import Image from "next/image";
 import { MapPin } from "lucide-react";
 import Overview from "@/components/cafe/Overview";
 import { useState } from "react";
+import { ComponentLoadingScreen } from "@/components/ui/LoadingScreen";
 
 // Dynamically import MapBlock only on client
 const MapBlock = dynamic(() => import("@/components/blocks/Map"), {
     ssr: false,
+    loading: () => <ComponentLoadingScreen message="Loading map..." />
 });
 
 export default function CafeDetailClient({ cafe }: { cafe: any }) {

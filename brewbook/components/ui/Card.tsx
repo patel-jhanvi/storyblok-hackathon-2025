@@ -93,12 +93,19 @@ export default function Card({
             </span>
             {MapIcon && (
               <button
-                type="button"
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
-                  window.location.href = href; // manually route to detail page
+                  window.open(
+                    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      address || `${lat},${lng}`
+                    )}`,
+                    '_blank',
+                    'noopener,noreferrer'
+                  );
                 }}
-                className="p-1 rounded hover:bg-gray-100"
+                className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                type="button"
               >
                 <MapIcon className="w-6 h-6 text-gray-500 hover:text-gray-700" />
               </button>
@@ -145,7 +152,11 @@ export default function Card({
                 return (
                   <Icon
                     key={reaction.name}
-                    onClick={() => handleClick(reaction.name)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleClick(reaction.name);
+                    }}
                     className={`cursor-pointer w-6 h-6 transition-transform text-gray-500 hover:text-gray-700
                       hover:scale-125
                       ${active === reaction.name

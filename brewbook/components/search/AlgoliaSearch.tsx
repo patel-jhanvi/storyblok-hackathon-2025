@@ -14,6 +14,7 @@ import {
 } from 'react-instantsearch';
 import { liteClient as algoliasearch } from 'algoliasearch/lite';
 import { Search, AlertTriangle } from 'lucide-react';
+import InstantFilters from './InstantFilters';
 
 const appId = process.env.NEXT_PUBLIC_ALGOLIA_APPLICATION_ID;
 const apiKey = process.env.NEXT_PUBLIC_ALGOLIA_API_KEY;
@@ -123,15 +124,15 @@ function HeroSearchBox() {
   };
 
   return (
-    <div className="relative">
-      <div className="flex w-full max-w-3xl h-16 rounded-full border border-gray-300 bg-white shadow-md overflow-hidden items-center">
+    <div className="relative z-[9999]">
+      <div className="flex w-full max-w-3xl h-16 rounded-full border border-gray-300 bg-white shadow-md overflow-hidden">
         <SearchBox
           placeholder="Search cafés, events, study spots..."
           classNames={{
             root: 'flex-grow',
             form: 'flex items-center h-full',
             input: 'flex-grow px-4 text-gray-700 placeholder-gray-400 focus:outline-none bg-transparent border-0',
-            submit: 'h-full px-6 bg-[#6B4026] text-white font-semibold hover:bg-[#4E2F1C] border-0 rounded-r-full',
+            submit: 'h-full px-6 bg-[#6B4026] text-white font-semibold hover:bg-[#4E2F1C] border-0 rounded-r-full flex items-center justify-center',
             submitIcon: 'w-5 h-5',
             reset: 'px-2 text-gray-400 hover:text-gray-600',
             resetIcon: 'w-4 h-4',
@@ -146,7 +147,7 @@ function HeroSearchBox() {
 
       {/* Results dropdown */}
       {isExpanded && query && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-[9999] max-h-96 overflow-y-auto">
           <div className="p-4">
             <div className="flex justify-between items-center mb-4">
               <Stats
@@ -198,6 +199,11 @@ function FullPageSearch() {
             loadingIcon: 'w-4 h-4 text-[#6B4026] animate-spin'
           }}
         />
+      </div>
+
+      {/* Instant Filters */}
+      <div className="mb-6">
+        <InstantFilters />
       </div>
 
       <div className="flex justify-between items-center mb-4">

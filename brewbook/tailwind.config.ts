@@ -7,7 +7,12 @@ const config: Config = {
     "./pages/**/*.{ts,tsx}"
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["var(--font-outfit)", "sans-serif"],
+        berkshire: ["var(--font-berkshire-swash)", "cursive"],
+      },
+    },
   },
   plugins: [],
 };

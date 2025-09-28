@@ -5,7 +5,9 @@
       "Bash(npm run seed:algolia:*)",
       "Bash(npm run algolia:test:*)",
       "Bash(npm install:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []

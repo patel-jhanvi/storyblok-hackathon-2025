@@ -1,15 +1,14 @@
 import { geocodeAddress } from "@/lib/utils/geocode";
-import CafeDetailClient from "./CafeDetailClient";
-import { processSingleStory } from "@/lib/storyblok-fetch";
+import EventDetailClient from "./EventDetailClient";
 
-export default async function CafeDetailPage({
+export default async function EventDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
 
-  console.log("Fetching story for slug:", slug);
+  console.log("Fetching event story for slug:", slug);
 
   // Fetch Storyblok story
   const token = process.env.STORYBLOK_TOKEN || process.env.NEXT_PUBLIC_STORYBLOK_TOKEN;
@@ -26,8 +25,8 @@ export default async function CafeDetailPage({
     console.error("Failed to fetch story:", res.status, res.statusText);
     return (
       <div className="p-8 text-center">
-        <h1 className="text-2xl font-bold text-red-600 mb-4">Story Not Found</h1>
-        <p className="text-gray-600">Could not find story with slug: <code className="bg-gray-100 px-2 py-1 rounded">{slug}</code></p>
+        <h1 className="text-2xl font-bold text-red-600 mb-4">Event Not Found</h1>
+        <p className="text-gray-600">Could not find event with slug: <code className="bg-gray-100 px-2 py-1 rounded">{slug}</code></p>
         <p className="text-sm text-gray-500 mt-2">Response: {res.status} {res.statusText}</p>
       </div>
     );
@@ -41,7 +40,7 @@ export default async function CafeDetailPage({
   if (!story) {
     return (
       <div className="p-8 text-center">
-        <h1 className="text-2xl font-bold text-red-600 mb-4">Story Not Found</h1>
+        <h1 className="text-2xl font-bold text-red-600 mb-4">Event Not Found</h1>
         <p className="text-gray-600">Story exists in response but is empty for slug: <code className="bg-gray-100 px-2 py-1 rounded">{slug}</code></p>
         <pre className="text-xs bg-gray-100 p-2 rounded mt-4 text-left overflow-auto">
           {JSON.stringify(data, null, 2)}
@@ -50,23 +49,32 @@ export default async function CafeDetailPage({
     );
   }
 
-  console.log("Storyblok address:", story.content.address);
-  // Auto geocode address -> lat/lng
-  const coords = await geocodeAddress(story.content.address);
+  // Try to get coordinates from address if available
+  let coords = { lat: 0, lng: 0 };
   const bodyContent = story.content.body?.[0];
+  const eventLocation = bodyContent?.location || story.content.location;
 
-  const cafe = {
-    title: bodyContent?.name || bodyContent?.title || story.name,
+  if (eventLocation) {
+    console.log("Event location:", eventLocation);
+    coords = await geocodeAddress(eventLocation);
+  }
+
+  const event = {
+    title: bodyContent?.title || bodyContent?.name || story.name,
     type: bodyContent?.component || story.content.type,
-    summary:
-      bodyContent?.description?.content?.[0]?.content?.[0]?.text ||
-      story.content.summary,
+    description: bodyContent?.description,
+    summary: bodyContent?.description?.content?.[0]?.content?.[0]?.text || story.content.summary,
     image: bodyContent?.image?.filename || "/images/placeholder.png",
-    address: bodyContent?.location || story.content.location,
+    location: eventLocation,
+    date: bodyContent?.date || story.content.date,
+    time: bodyContent?.time || story.content.time,
+    price: bodyContent?.price || story.content.price,
+    organizer: bodyContent?.organizer || story.content.organizer,
+    tags: bodyContent?.metadata?.[0]?.tags || story.content.tags || "",
     amenities: bodyContent?.amenities || [],
     lat: coords.lat,
     lng: coords.lng,
   };
 
-  return <CafeDetailClient cafe={cafe} />;
+  return <EventDetailClient event={event} />;
 }
