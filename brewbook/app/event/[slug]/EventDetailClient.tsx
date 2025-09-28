@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import {
@@ -16,6 +17,7 @@ import {
 import { ComponentLoadingScreen } from "@/components/ui/LoadingScreen";
 import FloatingBackButton from "@/components/ui/FloatingBackButton";
 import { render } from "storyblok-rich-text-react-renderer";
+import { geocodeAddress } from "@/lib/utils/geocode";
 
 // Dynamically import MapBlock only on client
 const MapBlock = dynamic(() => import("@/components/blocks/Map"), {
@@ -37,12 +39,32 @@ interface EventDetailClientProps {
     organizer?: string;
     tags?: string;
     amenities?: string[];
-    lat: number;
-    lng: number;
   };
 }
 
 export default function EventDetailClient({ event }: EventDetailClientProps) {
+    const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
+    const [isGeocoding, setIsGeocoding] = useState(true);
+
+    useEffect(() => {
+        async function getCoordinates() {
+            if (event.location) {
+                try {
+                    const coords = await geocodeAddress(event.location);
+                    setCoordinates({
+                        lat: coords.lat ?? 0,
+                        lng: coords.lng ?? 0
+                    });
+                } catch (error) {
+                    console.error("Failed to geocode address:", error);
+                    setCoordinates({ lat: 0, lng: 0 });
+                }
+            }
+            setIsGeocoding(false);
+        }
+
+        getCoordinates();
+    }, [event.location]);
     const eventDate = event.date ? new Date(event.date) : null;
     const tagList = event.tags ? event.tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
 
@@ -211,12 +233,16 @@ export default function EventDetailClient({ event }: EventDetailClientProps) {
                         {event.location && (
                             <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
                                 <div className="h-64">
-                                    <MapBlock
-                                        lat={event.lat}
-                                        lng={event.lng}
-                                        title={event.title}
-                                        address={event.location}
-                                    />
+                                    {isGeocoding ? (
+                                        <ComponentLoadingScreen message="Loading location..." />
+                                    ) : (
+                                        <MapBlock
+                                            lat={coordinates.lat}
+                                            lng={coordinates.lng}
+                                            title={event.title}
+                                            address={event.location}
+                                        />
+                                    )}
                                 </div>
                                 <div className="p-6">
                                     <h3 className="font-bold text-lg mb-2">{event.title}</h3>
@@ -224,7 +250,7 @@ export default function EventDetailClient({ event }: EventDetailClientProps) {
                                         onClick={() => {
                                             window.open(
                                                 `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                                    event.location || `${event.lat},${event.lng}`
+                                                    event.location || `${coordinates.lat},${coordinates.lng}`
                                                 )}`,
                                                 '_blank',
                                                 'noopener,noreferrer'

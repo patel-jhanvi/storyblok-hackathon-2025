@@ -1,4 +1,3 @@
-import { geocodeAddress } from "@/lib/utils/geocode";
 import EventDetailClient from "./EventDetailClient";
 
 export default async function EventDetailPage({
@@ -49,19 +48,8 @@ export default async function EventDetailPage({
     );
   }
 
-  // Try to get coordinates from address if available
-  let coords = { lat: 0, lng: 0 };
   const bodyContent = story.content.body?.[0];
   const eventLocation = bodyContent?.location || story.content.location;
-
-  if (eventLocation) {
-    console.log("Event location:", eventLocation);
-    const geocodeResult = await geocodeAddress(eventLocation);
-    coords = {
-      lat: geocodeResult.lat ?? 0,
-      lng: geocodeResult.lng ?? 0
-    };
-  }
 
   const event = {
     title: bodyContent?.title || bodyContent?.name || story.name,
@@ -76,8 +64,6 @@ export default async function EventDetailPage({
     organizer: bodyContent?.organizer || story.content.organizer,
     tags: bodyContent?.metadata?.[0]?.tags || story.content.tags || "",
     amenities: bodyContent?.amenities || [],
-    lat: coords.lat,
-    lng: coords.lng,
   };
 
   return <EventDetailClient event={event} />;

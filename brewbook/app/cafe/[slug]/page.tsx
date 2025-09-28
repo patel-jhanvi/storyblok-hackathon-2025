@@ -1,4 +1,3 @@
-import { geocodeAddress } from "@/lib/utils/geocode";
 import CafeDetailClient from "./CafeDetailClient";
 
 export default async function CafeDetailPage({
@@ -50,8 +49,6 @@ export default async function CafeDetailPage({
   }
 
   console.log("Storyblok address:", story.content.address);
-  // Auto geocode address -> lat/lng
-  const coords = await geocodeAddress(story.content.address);
   const bodyContent = story.content.body?.[0];
 
   const cafe = {
@@ -63,8 +60,6 @@ export default async function CafeDetailPage({
     image: bodyContent?.image?.filename || "/images/placeholder.png",
     address: bodyContent?.location || story.content.location,
     amenities: bodyContent?.amenities || [],
-    lat: coords.lat ?? 0,
-    lng: coords.lng ?? 0,
   };
 
   return <CafeDetailClient cafe={cafe} />;

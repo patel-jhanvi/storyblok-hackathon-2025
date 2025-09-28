@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
@@ -7,6 +8,7 @@ import Overview from "@/components/cafe/Overview";
 import { useState } from "react";
 import { ComponentLoadingScreen } from "@/components/ui/LoadingScreen";
 import FloatingBackButton from "@/components/ui/FloatingBackButton";
+import { geocodeAddress } from "@/lib/utils/geocode";
 
 // Dynamically import MapBlock only on client
 const MapBlock = dynamic(() => import("@/components/blocks/Map"), {
@@ -20,8 +22,6 @@ interface Cafe {
   type: string;
   summary: string;
   amenities: string[];
-  lat: number;
-  lng: number;
   address: string;
 }
 
@@ -39,6 +39,28 @@ export default function CafeDetailClient({ cafe }: { cafe: Cafe }) {
         setNewReview({ name: "", text: "", rating: 5 });
     };
 
+    const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
+    const [isGeocoding, setIsGeocoding] = useState(true);
+
+    useEffect(() => {
+        async function getCoordinates() {
+            if (cafe.address) {
+                try {
+                    const coords = await geocodeAddress(cafe.address);
+                    setCoordinates({
+                        lat: coords.lat ?? 0,
+                        lng: coords.lng ?? 0
+                    });
+                } catch (error) {
+                    console.error("Failed to geocode address:", error);
+                    setCoordinates({ lat: 0, lng: 0 });
+                }
+            }
+            setIsGeocoding(false);
+        }
+
+        getCoordinates();
+    }, [cafe.address]);
     return (
         <div className="min-h-screen bg-[#FAF9F6]">
             <FloatingBackButton label="Back to Home" />
@@ -158,12 +180,16 @@ export default function CafeDetailClient({ cafe }: { cafe: Cafe }) {
 
                 {/* Right column */}
                 <div className="col-span-1 space-y-4">
-                    <MapBlock
-                        lat={cafe.lat}
-                        lng={cafe.lng}
-                        title={cafe.title}
-                        address={cafe.address}
-                    />
+                    {isGeocoding ? (
+                        <ComponentLoadingScreen message="Loading location..." />
+                    ) : (
+                        <MapBlock
+                            lat={coordinates.lat}
+                            lng={coordinates.lng}
+                            title={cafe.title}
+                            address={cafe.address}
+                        />
+                    )}
 
                     <div>
                         <h2 className="font-bold text-lg">{cafe.title}</h2>
@@ -183,6 +209,17 @@ export default function CafeDetailClient({ cafe }: { cafe: Cafe }) {
                                 {cafe.address}
                             </button>
                         </div>
+                        <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                cafe.address || `${coordinates.lat},${coordinates.lng}`
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-gray-600 flex items-center gap-2 hover:text-blue-600"
+                        >
+                            <MapPin className="w-4 h-4 text-[#6B4F37]" />
+                            {cafe.address}
+                        </a>
                     </div>
                 </div>
             </div>
