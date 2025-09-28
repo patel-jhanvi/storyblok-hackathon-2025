@@ -18,6 +18,7 @@ import { ComponentLoadingScreen } from "@/components/ui/LoadingScreen";
 import FloatingBackButton from "@/components/ui/FloatingBackButton";
 import { render } from "storyblok-rich-text-react-renderer";
 import { geocodeAddress } from "@/lib/utils/geocode";
+import { storyblokEditable } from "@storyblok/react";
 
 // Dynamically import MapBlock only on client
 const MapBlock = dynamic(() => import("@/components/blocks/Map"), {
@@ -40,9 +41,10 @@ interface EventDetailClientProps {
     tags?: string;
     amenities?: string[];
   };
+  eventBlok?: any; // The original Storyblok blok for editing
 }
 
-export default function EventDetailClient({ event }: EventDetailClientProps) {
+export default function EventDetailClient({ event, eventBlok }: EventDetailClientProps) {
     const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
     const [isGeocoding, setIsGeocoding] = useState(true);
 
@@ -95,7 +97,7 @@ export default function EventDetailClient({ event }: EventDetailClientProps) {
 
                 {/* Hero Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-8">
-                    <div className="max-w-4xl">
+                    <div className="max-w-4xl" {...(eventBlok ? storyblokEditable(eventBlok) : {})}>
                         <span className="inline-block px-4 py-2 rounded-full bg-[#82B0D8] text-white text-sm font-medium mb-4">
                             {event.type?.toUpperCase() || 'EVENT'}
                         </span>

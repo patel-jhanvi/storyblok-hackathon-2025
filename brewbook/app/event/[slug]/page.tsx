@@ -1,11 +1,15 @@
+import EventPageClient from "./EventPageClient";
 import EventDetailClient from "./EventDetailClient";
 
 export default async function EventDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { slug } = await params;
+  const search = await searchParams;
 
   console.log("Fetching event story for slug:", slug);
 
@@ -13,7 +17,11 @@ export default async function EventDetailPage({
   const token = process.env.STORYBLOK_TOKEN || process.env.NEXT_PUBLIC_STORYBLOK_TOKEN;
   console.log("Using token:", token ? "Token present" : "No token found");
 
-  const url = `https://api.storyblok.com/v2/cdn/stories/${slug}?token=${token}`;
+  // Check if this is a preview request
+  const isPreview = search._storyblok !== undefined;
+  const version = isPreview ? 'draft' : 'published';
+
+  const url = `https://api.storyblok.com/v2/cdn/stories/${slug}?token=${token}&version=${version}`;
   console.log("Fetching from URL:", url.replace(token || "", "***"));
 
   const res = await fetch(url, { cache: "no-store" });
@@ -66,5 +74,15 @@ export default async function EventDetailPage({
     amenities: bodyContent?.amenities || [],
   };
 
-  return <EventDetailClient event={event} />;
+  if (isPreview) {
+    // For preview mode, return a client component that handles the visual editor
+    return <EventPageClient slug={slug} initialStory={story} initialEvent={event} />;
+  }
+
+  // For regular mode, just return the event detail directly
+  return (
+    <div className="min-h-screen bg-[#FAF9F6]">
+      <EventDetailClient event={event} />
+    </div>
+  );
 }
