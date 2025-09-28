@@ -67,6 +67,11 @@ export default function CardGrid({ blok }: CardGridProps) {
             image={item.image}
             metadata={item.metadata || []}
 
+            address={item.address}
+            lat={item.lat}
+            lng={item.lng}
+            amenities={item.amenities}
+
           />
         ))}
       </div>
@@ -89,4 +94,4 @@ export default function CardGrid({ blok }: CardGridProps) {
       )}
     </section>
   );
-}
+} 

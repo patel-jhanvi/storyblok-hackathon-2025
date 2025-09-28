@@ -14,6 +14,8 @@ interface CardProps {
   address?: string;
   lat?: number;
   lng?: number;
+  amenities?: string[];
+
 }
 
 export default function Card({
@@ -41,6 +43,16 @@ export default function Card({
   const handleClick = (reactionName: string) => {
     setActive(reactionName);
     setTimeout(() => setActive(null), 800);
+  };
+
+  const openMap = (e: React.MouseEvent) => {
+    e.stopPropagation(); // prevent navigating to detail page
+    window.open(
+      `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        address || `${lat},${lng}`
+      )}`,
+      "_blank"
+    );
   };
 
   // Pick route based on type
@@ -79,17 +91,17 @@ export default function Card({
             >
               {type.toUpperCase()}
             </span>
-
             {MapIcon && (
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                  address || `${lat},${lng}`
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.location.href = href; // manually route to detail page
+                }}
+                className="p-1 rounded hover:bg-gray-100"
               >
                 <MapIcon className="w-6 h-6 text-gray-500 hover:text-gray-700" />
-              </a>
+              </button>
             )}
           </div>
 
@@ -135,7 +147,8 @@ export default function Card({
                     key={reaction.name}
                     onClick={() => handleClick(reaction.name)}
                     className={`cursor-pointer w-6 h-6 transition-transform text-gray-500 hover:text-gray-700
-                      hover:scale-125 ${active === reaction.name
+                      hover:scale-125
+                      ${active === reaction.name
                         ? "scale-125 drop-shadow-md text-gray-700"
                         : ""
                       }`}
@@ -149,5 +162,3 @@ export default function Card({
     </Link>
   );
 }
-
-
