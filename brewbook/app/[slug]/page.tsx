@@ -50,8 +50,10 @@ export default function SlugPage() {
           throw new Error("Storyblok API not initialized");
         }
 
+        const slug = Array.isArray(params.slug) ? params.slug.join("/") : params.slug;
+
         const { data } = await storyblokApi.get(`cdn/stories/${slug}`, {
-          version: "draft",
+          version: process.env.NODE_ENV === "production" ? "published" : "draft",
         });
         setStory(data.story);
       } catch (error) {
