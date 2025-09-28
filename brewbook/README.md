@@ -1,10 +1,10 @@
 # Brewbook
 
-Coffee shops and events discovery app for developers. Built with Next.js, Storyblok CMS, and Algolia search.
+Our coffee shops and events discovery app for developers. We built it with Next.js, Storyblok CMS, and Algolia search.
 
 ## Quick Start
 
-1. **Clone & Install**
+1. **Let's Clone & Install**
 
    ```bash
    git clone <repo-url>
@@ -13,7 +13,7 @@ Coffee shops and events discovery app for developers. Built with Next.js, Storyb
    ```
 
 2. **Environment Setup**
-   Create `.env` file:
+   We need to create a `.env` file:
 
    ```env
    STORYBLOK_TOKEN=your_preview_token
@@ -23,11 +23,11 @@ Coffee shops and events discovery app for developers. Built with Next.js, Storyb
    NEXT_PUBLIC_ALGOLIA_INDEX_NAME=brewbook
    ```
 
-3. **Seed Data**
+3. **Let's Seed Our Data**
 
    ```bash
-   npm run seed:storyblok    # Seed Storyblok with sample data
-   npm run seed:algolia      # Index content to Algolia
+   npm run seed:storyblok    # We seed Storyblok with sample data
+   npm run seed:algolia      # We index content to Algolia
    ```
 
 4. **Run Development**
@@ -36,12 +36,12 @@ Coffee shops and events discovery app for developers. Built with Next.js, Storyb
    ```
    Open [http://localhost:3000](http://localhost:3000)
 
-## Features
+## Features We Built
 
-- **Search & Filters**: Algolia-powered search with smart filters
+- **Search & Filters**: Our Algolia-powered search with smart filters
 - **Detail Pages**: Cafe and event detail pages with maps
 - **CMS Integration**: Live editing with Storyblok Visual Editor
-- **Responsive Design**: Mobile-first, coffee-themed UI
+- **Responsive Design**: Our mobile-first, coffee-themed UI
 
 ## Pages
 
@@ -59,13 +59,13 @@ npm run lint         # Run ESLint
 
 ## Storyblok CMS
 
-Enable live editing by adding `?_storyblok` to any URL. Content types: Page, Hero, Cafe, Event.
+We can enable live editing by adding `?_storyblok` to any URL. Content types: Page, Hero, Cafe, Event.
 
 ## Algolia Search
 
-Configure search index and synonyms:
+Let's configure our search index and synonyms:
 
 ```bash
-npm run algolia:config     # Setup index
-npm run algolia:test       # Test configuration
+npm run algolia:config     # We setup the index
+npm run algolia:test       # We test our configuration
 ```
