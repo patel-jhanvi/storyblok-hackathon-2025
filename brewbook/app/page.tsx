@@ -7,7 +7,7 @@ import UnifiedSearchExperience from "@/components/search/UnifiedSearchExperience
 
 export default function Home() {
   const searchParams = useSearchParams();
-  const [story, setStory] = useState<any>(null);
+  const [story, setStory] = useState<{ content?: { body?: Array<{ _uid: string }> } } | null>(null);
   const [isPreview, setIsPreview] = useState(false);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function Home() {
   if (isPreview && story) {
     return (
       <main>
-        {story.content?.body?.map((blok: any) => (
+        {story.content?.body?.map((blok: { _uid: string }) => (
           <StoryblokComponent blok={blok} key={blok._uid} />
         ))}
       </main>

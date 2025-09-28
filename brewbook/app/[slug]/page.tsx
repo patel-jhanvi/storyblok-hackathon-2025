@@ -9,14 +9,17 @@ import Event from "@/components/blocks/Event";
 // Extend Window interface for Storyblok bridge
 declare global {
   interface Window {
-    storyblok: any;
+    storyblok: {
+      init: (config: { accessToken?: string }) => void;
+      on: (events: string[], callback: (event: { action: string; story: { id: string; name: string; slug: string; content: { body?: Array<{ component: string }> } } }) => void) => void;
+    };
   }
 }
 
 export default function SlugPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const [story, setStory] = useState<any>(null);
+  const [story, setStory] = useState<{ id: string; name: string; slug: string; content: { body?: Array<{ component: string }> } } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,7 +32,7 @@ export default function SlugPage() {
         accessToken: process.env.NEXT_PUBLIC_STORYBLOK_TOKEN,
       });
 
-      window.storyblok.on(['input', 'published', 'change'], (event: any) => {
+      window.storyblok.on(['input', 'published', 'change'], (event: { action: string; story: { id: string; name: string; slug: string; content: { body?: Array<{ component: string }> } } }) => {
         if (event.action == 'input') {
           if (event.story.id === story?.id) {
             setStory(event.story);
@@ -69,7 +72,7 @@ export default function SlugPage() {
     if (slug) {
       fetchStory();
     }
-  }, [params.slug]);
+  }, [params.slug, searchParams, story?.id]);
 
   const isPreview = searchParams.get('_storyblok') !== null;
 

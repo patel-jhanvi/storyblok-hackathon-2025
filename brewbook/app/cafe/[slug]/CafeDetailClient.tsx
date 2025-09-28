@@ -13,7 +13,18 @@ const MapBlock = dynamic(() => import("@/components/blocks/Map"), {
     loading: () => <ComponentLoadingScreen message="Loading map..." />
 });
 
-export default function CafeDetailClient({ cafe }: { cafe: any }) {
+interface Cafe {
+  image?: string;
+  title: string;
+  type: string;
+  summary: string;
+  amenities: string[];
+  lat: number;
+  lng: number;
+  address: string;
+}
+
+export default function CafeDetailClient({ cafe }: { cafe: Cafe }) {
     const [activeTab, setActiveTab] = useState<"overview" | "reviews">("overview");
     const [reviews, setReviews] = useState([
         { name: "Alice", text: "Loved the vibe and coffee!", rating: 5 },

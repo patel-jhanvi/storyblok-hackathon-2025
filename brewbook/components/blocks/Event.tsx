@@ -8,7 +8,7 @@ interface EventProps {
     _uid: string;
     component: string;
     title: string;
-    description: any;
+    description: object;
     image?: {
       filename: string;
       alt?: string;

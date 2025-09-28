@@ -12,7 +12,7 @@ export interface StoryblokStory {
       _uid: string;
       name?: string;
       title?: string;
-      description?: any;
+      description?: object;
       location?: string;
       image?: {
         filename: string;

@@ -1,4 +1,4 @@
-const Logger = require('../utils/Logger');
+import Logger from '../utils/Logger.js';
 
 /**
  * Service for normalizing Storyblok stories into Algolia search records
@@ -293,4 +293,4 @@ class RecordNormalizer {
   }
 }
 
-module.exports = RecordNormalizer;
+export default RecordNormalizer;

@@ -1,5 +1,4 @@
 import Map from "./Map";
-import RichText from "./RichText";
 import { IconMap } from "@/components/ui/IconMap";
 
 
@@ -12,7 +11,7 @@ interface DetailPageProps {
     address?: string;
     lat?: number;
     lng?: number;
-    reviews?: any[];
+    reviews?: Array<{ text: string }>;
     price?: string;
 }
 
@@ -26,7 +25,6 @@ export default function DetailPage({
     lat,
     lng,
     reviews,
-    price,
 }: DetailPageProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto px-6 py-10">

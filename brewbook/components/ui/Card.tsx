@@ -38,7 +38,7 @@ export default function Card({
     { name: "sad", icon: Frown },
   ];
 
-  const MapIcon = IconMap["location"] as React.ComponentType<any> | undefined;
+  const MapIcon = IconMap["location"] as React.ComponentType<{ className?: string }> | undefined;
 
   const handleClick = (reactionName: string) => {
     setActive(reactionName);

@@ -1,4 +1,4 @@
-const Logger = require('../utils/Logger');
+import Logger from '../utils/Logger.js';
 
 /**
  * Service for interacting with Storyblok API
@@ -89,4 +89,4 @@ class StoryblokService {
   }
 }
 
-module.exports = StoryblokService;
+export default StoryblokService;

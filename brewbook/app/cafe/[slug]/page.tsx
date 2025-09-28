@@ -1,6 +1,5 @@
 import { geocodeAddress } from "@/lib/utils/geocode";
 import CafeDetailClient from "./CafeDetailClient";
-import { processSingleStory } from "@/lib/storyblok-fetch";
 
 export default async function CafeDetailPage({
   params,

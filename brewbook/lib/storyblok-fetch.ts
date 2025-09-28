@@ -26,12 +26,12 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
     const stories = data.stories;
 
     return stories
-      .filter((story: any) =>
+      .filter((story: { content: { body?: Array<{ component: string }> }; slug: string }) =>
         story.content.body &&
         story.content.body.length > 0 &&
         story.slug !== 'home'
       )
-      .map((story: any) => {
+      .map((story: { content: { body: Array<{ component: string; name?: string; title?: string; description?: { content?: Array<{ content?: Array<{ text?: string }> }> }; image?: { filename: string } }> }; slug: string; name: string }) => {
         const bodyContent = story.content.body[0];
         const isEvent = bodyContent.component === 'event';
         const isCafe = bodyContent.component === 'cafe';
@@ -107,10 +107,11 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
   }
 }
 
-export function processSingleStory(story: any): ProcessedCardData {
+// Single story processor (for detail pages)
+export function processSingleStory(story: { content: { body?: Array<{ component: string; metadata?: Array<{ tags?: string }> }> } }): ProcessedCardData {
   const bodyContent = story.content.body?.[0];
   const isEvent = bodyContent?.component === "event";
-  const isCafe = bodyContent?.component === "cafe";
+  // const isCafe = bodyContent?.component === "cafe";
 
   const metadata = bodyContent?.metadata?.[0];
   const tags: string[] = [];

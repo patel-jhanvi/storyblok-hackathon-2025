@@ -1,5 +1,5 @@
-const { algoliasearch } = require('algoliasearch');
-const Logger = require('../utils/Logger');
+import { algoliasearch } from 'algoliasearch';
+import Logger from '../utils/Logger.js';
 
 /**
  * Service for interacting with Algolia search index
@@ -258,4 +258,4 @@ class AlgoliaService {
   }
 }
 
-module.exports = AlgoliaService;
+export default AlgoliaService;

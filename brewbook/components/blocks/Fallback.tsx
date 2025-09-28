@@ -16,7 +16,7 @@ export default function Fallback({ blok }: FallbackProps) {
     >
       <div className="text-center">
         <h3 className="text-lg font-semibold text-yellow-800 mb-2">
-          Unknown Component: "{blok.component}"
+          Unknown Component: &ldquo;{blok.component}&rdquo;
         </h3>
         <p className="text-sm text-yellow-700 mb-4">
           This component type is not yet implemented. Please add it to the component registry.

@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 /**
  * Configuration service responsible for loading and validating environment variables
@@ -31,7 +31,7 @@ class ConfigService {
           }
         }
       });
-    } catch (error) {
+    } catch {
       // Environment variables will be used from system if .env not available
     }
   }
@@ -76,4 +76,4 @@ class ConfigService {
   }
 }
 
-module.exports = ConfigService;
+export default ConfigService;

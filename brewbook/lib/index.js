@@ -4,19 +4,19 @@
  */
 
 // Services
-const ConfigService = require('./services/ConfigService');
-const StoryblokService = require('./services/StoryblokService');
-const AlgoliaService = require('./services/AlgoliaService');
-const RecordNormalizer = require('./services/RecordNormalizer');
-const SeedingOrchestrator = require('./services/SeedingOrchestrator');
+import ConfigService from './services/ConfigService.js';
+import StoryblokService from './services/StoryblokService.js';
+import AlgoliaService from './services/AlgoliaService.js';
+import RecordNormalizer from './services/RecordNormalizer.js';
+import SeedingOrchestrator from './services/SeedingOrchestrator.js';
 
 // Utilities
-const Logger = require('./utils/Logger');
+import Logger from './utils/Logger.js';
 
 // Types (for documentation)
-const Types = require('./types');
+import Types from './types.js';
 
-module.exports = {
+export {
   // Services
   ConfigService,
   StoryblokService,

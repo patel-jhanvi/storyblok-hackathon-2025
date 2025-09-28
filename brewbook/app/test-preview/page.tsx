@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { StoryblokComponent, getStoryblokApi } from "@storyblok/react";
 
 export default function TestPreviewPage() {
-  const [story, setStory] = useState<any>(null);
+  const [story, setStory] = useState<{ name: string; content?: { body?: Array<{ _uid: string }> } } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function TestPreviewPage() {
           <p className="text-gray-600 mb-4">Could not load the Demo Coffee story.</p>
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-800">
-              Make sure you've run the seeding script: <code className="bg-blue-100 px-2 py-1 rounded">python3 storyblok_seed.py</code>
+              Make sure you&apos;ve run the seeding script: <code className="bg-blue-100 px-2 py-1 rounded">python3 storyblok_seed.py</code>
             </p>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default function TestPreviewPage() {
 
       {/* Render the Storyblok story */}
       <div className="max-w-4xl mx-auto p-8">
-        {story.content?.body?.map((blok: any) => (
+        {story.content?.body?.map((blok: { _uid: string }) => (
           <StoryblokComponent blok={blok} key={blok._uid} />
         ))}
       </div>
@@ -92,7 +92,7 @@ export default function TestPreviewPage() {
             </li>
             <li className="flex">
               <span className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mr-3 mt-0.5">3</span>
-              Go to Content → "Demo Coffee" story → Visual Editor tab
+              Go to Content → &ldquo;Demo Coffee&rdquo; story → Visual Editor tab
             </li>
             <li className="flex">
               <span className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mr-3 mt-0.5">4</span>
