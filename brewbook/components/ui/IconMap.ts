@@ -1,3 +1,4 @@
+import React from "react";
 import FreeIcon from "./icons/FreeIcon";
 
 
@@ -31,7 +32,7 @@ import {
 
 
 
-export const IconMap: Record<string, any> = {
+export const IconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     // Cafés
     wifi: Wifi,
     power: Plug,

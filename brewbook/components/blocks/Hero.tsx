@@ -15,8 +15,17 @@ export default function Hero({ blok }: HeroProps) {
   return (
     <section
       {...(blok ? storyblokEditable(blok) : {})}
-      className="relative bg-[#FAF9F6] py-16 text-center"
+      className="relative pt-8 pb-16 text-center z-[9999]"
     >
+      {/* Logo */}
+      <div className="mb-4">
+        <img
+          src="/logos/brewbook-logo.png"
+          alt="Brewbook Logo"
+          className="h-32 w-96 mx-auto object-cover object-center"
+        />
+      </div>
+
       <h1 className="text-5xl font-bold text-[#6B4026]">
         {blok?.headline || "Code & Coffee's smarter city guide"}
       </h1>

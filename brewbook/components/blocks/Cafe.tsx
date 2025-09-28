@@ -8,7 +8,7 @@ interface CafeProps {
     _uid: string;
     component: string;
     name: string;
-    description: any;
+    description: object;
     image?: {
       filename: string;
       alt?: string;

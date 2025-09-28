@@ -5,6 +5,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Apply Outfit font globally */
+* {
+  font-family: var(--font-outfit), sans-serif;
+}
+
+/* Apply Berkshire Swash to h1 elements */
+h1 {
+  font-family: var(--font-berkshire-swash), cursive !important;
+}
+
 /* Storyblok Visual Editor Styles - Only show in Visual Editor mode */
 .storyblok__outline [data-blok-c]:hover {
   outline: 2px solid #10b981 !important;

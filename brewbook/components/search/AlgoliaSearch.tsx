@@ -13,7 +13,9 @@ import {
   useSearchBox,
 } from 'react-instantsearch';
 import { liteClient as algoliasearch } from 'algoliasearch/lite';
-import { Search, AlertTriangle } from 'lucide-react';
+import { Search, AlertTriangle, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import InstantFilters from './InstantFilters';
 
 const appId = process.env.NEXT_PUBLIC_ALGOLIA_APPLICATION_ID;
 const apiKey = process.env.NEXT_PUBLIC_ALGOLIA_API_KEY;
@@ -31,6 +33,7 @@ interface Hit {
   type?: string;
   image?: string;
   metadata?: string[];
+  slug?: string;
 }
 
 interface AlgoliaSearchProps {
@@ -38,8 +41,22 @@ interface AlgoliaSearchProps {
 }
 
 function Hit({ hit }: { hit: Hit }) {
+  const router = useRouter();
+
+  const handleClick = () => {
+    if (hit.slug) {
+      const path = hit.type === 'cafe' ? `/cafe/${hit.slug}` :
+                   hit.type === 'event' ? `/event/${hit.slug}` :
+                   `/${hit.slug}`;
+      router.push(path);
+    }
+  };
+
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden p-4 hover:shadow-md transition-shadow">
+    <div
+      onClick={handleClick}
+      className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden p-4 hover:shadow-md transition-shadow cursor-pointer hover:border-[#6B4026]"
+    >
       <div className="flex items-start gap-4">
         {hit.image && (
           <img
@@ -115,26 +132,31 @@ function SearchResults() {
 
 function HeroSearchBox() {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { query } = useSearchBox();
+  const { query, refine } = useSearchBox();
 
   const handleFocus = () => setIsExpanded(true);
   const handleBlur = () => {
     if (!query) setIsExpanded(false);
   };
 
+  const handleClose = () => {
+    setIsExpanded(false);
+    refine('');
+  };
+
   return (
-    <div className="relative">
-      <div className="flex w-full max-w-3xl h-16 rounded-full border border-gray-300 bg-white shadow-md overflow-hidden items-center">
+    <div className="relative z-[9999]">
+      <div className="flex w-full max-w-3xl h-16 rounded-full border border-gray-300 bg-white shadow-md overflow-hidden">
         <SearchBox
           placeholder="Search cafés, events, study spots..."
           classNames={{
             root: 'flex-grow',
             form: 'flex items-center h-full',
             input: 'flex-grow px-4 text-gray-700 placeholder-gray-400 focus:outline-none bg-transparent border-0',
-            submit: 'h-full px-6 bg-[#6B4026] text-white font-semibold hover:bg-[#4E2F1C] border-0 rounded-r-full',
+            submit: 'h-full px-6 bg-[#6B4026] text-white font-semibold hover:bg-[#4E2F1C] border-0 rounded-r-full flex items-center justify-center',
             submitIcon: 'w-5 h-5',
-            reset: 'px-2 text-gray-400 hover:text-gray-600',
-            resetIcon: 'w-4 h-4',
+            reset: 'hidden',
+            resetIcon: 'hidden',
             loadingIndicator: 'px-2',
             loadingIcon: 'w-4 h-4 text-[#6B4026] animate-spin'
           }}
@@ -146,7 +168,7 @@ function HeroSearchBox() {
 
       {/* Results dropdown */}
       {isExpanded && query && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-[9999] max-h-96 overflow-y-auto">
           <div className="p-4">
             <div className="flex justify-between items-center mb-4">
               <Stats
@@ -154,11 +176,20 @@ function HeroSearchBox() {
                   root: 'text-sm text-gray-600',
                 }}
               />
-              <PoweredBy
-                classNames={{
-                  root: 'text-xs',
-                }}
-              />
+              <div className="flex items-center gap-2">
+                <PoweredBy
+                  classNames={{
+                    root: 'text-xs',
+                  }}
+                />
+                <button
+                  onClick={handleClose}
+                  className="text-gray-400 hover:text-gray-600 p-1"
+                  aria-label="Close search results"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
             <SearchResults />
             <div className="flex justify-center mt-4">
@@ -198,6 +229,11 @@ function FullPageSearch() {
             loadingIcon: 'w-4 h-4 text-[#6B4026] animate-spin'
           }}
         />
+      </div>
+
+      {/* Instant Filters */}
+      <div className="mb-6">
+        <InstantFilters />
       </div>
 
       <div className="flex justify-between items-center mb-4">
@@ -246,7 +282,13 @@ export default function AlgoliaSearch({ isHeroMode = false }: AlgoliaSearchProps
   }
 
   return (
-    <InstantSearch searchClient={searchClient} indexName={indexName}>
+    <InstantSearch
+      searchClient={searchClient}
+      indexName={indexName}
+      future={{
+        preserveSharedStateOnUnmount: true,
+      }}
+    >
       <Configure hitsPerPage={10} />
       {isHeroMode ? <HeroSearchBox /> : <FullPageSearch />}
     </InstantSearch>

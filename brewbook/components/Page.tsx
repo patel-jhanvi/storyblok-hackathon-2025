@@ -4,7 +4,7 @@ interface PageProps {
   blok: {
     _uid: string;
     component: string;
-    body?: any[];
+    body?: Array<{ _uid: string }>;
   };
 }
 

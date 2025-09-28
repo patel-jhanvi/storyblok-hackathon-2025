@@ -1,14 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { getStoryblokApi, StoryblokComponent } from "@storyblok/react";
+import { StoryblokComponent } from "@storyblok/react";
 import Hero from "@/components/blocks/Hero";
-import FiltersBar from "@/components/search/FiltersBar";
-import CardGrid from "@/components/blocks/CardGrid";
+import UnifiedSearchExperience from "@/components/search/UnifiedSearchExperience";
 
 export default function Home() {
   const searchParams = useSearchParams();
-  const [story, setStory] = useState<any>(null);
+  const [story, setStory] = useState<{ content?: { body?: Array<{ _uid: string }> } } | null>(null);
   const [isPreview, setIsPreview] = useState(false);
 
   useEffect(() => {
@@ -21,10 +20,20 @@ export default function Home() {
       // Fetch home story for preview mode
       async function fetchHomeStory() {
         try {
-          const storyblokApi = getStoryblokApi();
-          const { data } = await storyblokApi.get('cdn/stories/home', {
-            version: "draft",
-          });
+          const token = process.env.NEXT_PUBLIC_STORYBLOK_TOKEN;
+          if (!token) {
+            console.error('Storyblok token not configured');
+            return;
+          }
+
+          const url = `https://api.storyblok.com/v2/cdn/stories/home?token=${token}&version=draft`;
+          const response = await fetch(url);
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          const data = await response.json();
           setStory(data.story);
         } catch (error) {
           console.error("Error fetching home story:", error);
@@ -38,7 +47,7 @@ export default function Home() {
   if (isPreview && story) {
     return (
       <main>
-        {story.content?.body?.map((blok: any) => (
+        {story.content?.body?.map((blok: { _uid: string }) => (
           <StoryblokComponent blok={blok} key={blok._uid} />
         ))}
       </main>
@@ -49,10 +58,11 @@ export default function Home() {
   return (
     <main>
       <Hero />
-      <div className="mt-12">
-        <FiltersBar />
+
+      {/* Unified Search Experience with Filters and Results */}
+      <div className="mt-16">
+        <UnifiedSearchExperience />
       </div>
-      <CardGrid />
     </main>
   );
 }

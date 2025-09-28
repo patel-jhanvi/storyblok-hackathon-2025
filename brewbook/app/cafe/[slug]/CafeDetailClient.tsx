@@ -1,17 +1,30 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
 import Overview from "@/components/cafe/Overview";
-import { useState } from "react";
+import { ComponentLoadingScreen } from "@/components/ui/LoadingScreen";
+import FloatingBackButton from "@/components/ui/FloatingBackButton";
+import { geocodeAddress } from "@/lib/utils/geocode";
 
 // Dynamically import MapBlock only on client
 const MapBlock = dynamic(() => import("@/components/blocks/Map"), {
     ssr: false,
+    loading: () => <ComponentLoadingScreen message="Loading map..." />
 });
 
-export default function CafeDetailClient({ cafe }: { cafe: any }) {
+interface Cafe {
+  image?: string;
+  title: string;
+  type: string;
+  summary: string;
+  amenities: string[];
+  address: string;
+}
+
+export default function CafeDetailClient({ cafe }: { cafe: Cafe }) {
     const [activeTab, setActiveTab] = useState<"overview" | "reviews">("overview");
     const [reviews, setReviews] = useState([
         { name: "Alice", text: "Loved the vibe and coffee!", rating: 5 },
@@ -25,8 +38,33 @@ export default function CafeDetailClient({ cafe }: { cafe: any }) {
         setNewReview({ name: "", text: "", rating: 5 });
     };
 
+    const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
+    const [isGeocoding, setIsGeocoding] = useState(true);
+
+    useEffect(() => {
+        async function getCoordinates() {
+            if (cafe.address) {
+                try {
+                    const coords = await geocodeAddress(cafe.address);
+                    setCoordinates({
+                        lat: coords.lat ?? 0,
+                        lng: coords.lng ?? 0
+                    });
+                } catch (error) {
+                    console.error("Failed to geocode address:", error);
+                    setCoordinates({ lat: 0, lng: 0 });
+                }
+            }
+            setIsGeocoding(false);
+        }
+
+        getCoordinates();
+    }, [cafe.address]);
     return (
-        <div className="p-8">
+        <div className="min-h-screen bg-[#FAF9F6]">
+            <FloatingBackButton label="Back to Home" />
+
+            <div className="p-8">
             <div className="grid grid-cols-3 gap-8">
                 {/* Left column */}
                 <div className="col-span-2 space-y-6">
@@ -141,12 +179,16 @@ export default function CafeDetailClient({ cafe }: { cafe: any }) {
 
                 {/* Right column */}
                 <div className="col-span-1 space-y-4">
-                    <MapBlock
-                        lat={cafe.lat}
-                        lng={cafe.lng}
-                        title={cafe.title}
-                        address={cafe.address}
-                    />
+                    {isGeocoding ? (
+                        <ComponentLoadingScreen message="Loading location..." />
+                    ) : (
+                        <MapBlock
+                            lat={coordinates.lat}
+                            lng={coordinates.lng}
+                            title={cafe.title}
+                            address={cafe.address}
+                        />
+                    )}
 
                     <div>
                         <h2 className="font-bold text-lg">{cafe.title}</h2>
@@ -155,12 +197,12 @@ export default function CafeDetailClient({ cafe }: { cafe: any }) {
                                 onClick={() =>
                                     window.open(
                                         `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                            cafe.address || `${cafe.lat},${cafe.lng}`
+                                            cafe.address || `${coordinates.lat},${coordinates.lng}`
                                         )}`,
                                         "_blank"
                                     )
                                 }
-                                className="flex items-center gap-2 text-left"
+                                className="flex items-center gap-2 text-left hover:text-blue-600"
                             >
                                 <MapPin className="w-4 h-4 text-[#6B4F37]" />
                                 {cafe.address}
@@ -168,6 +210,7 @@ export default function CafeDetailClient({ cafe }: { cafe: any }) {
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     );

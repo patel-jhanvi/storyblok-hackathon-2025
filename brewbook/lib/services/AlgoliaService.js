@@ -1,5 +1,5 @@
-const { algoliasearch } = require('algoliasearch');
-const Logger = require('../utils/Logger');
+import { algoliasearch } from 'algoliasearch';
+import Logger from '../utils/Logger.js';
 
 /**
  * Service for interacting with Algolia search index
@@ -20,15 +20,24 @@ class AlgoliaService {
     return {
       searchableAttributes: [
         'title,name',
-        'description',
-        'location',
-        'tags',
+        'description,short_summary',
+        'address,city,location',
+        'tags,specialties',
+        'ai_tags,ai_summary',
         'type'
       ],
       attributesForFaceting: [
         'type',
-        'location',
-        'tags'
+        'city',
+        'tags',
+        'noise_level',
+        'seating_capacity',
+        'price_range',
+        'wifi',
+        'power_outlets',
+        'outdoor_seating',
+        'pet_friendly',
+        'open_now'
       ],
       customRanking: [
         'desc(rating)',
@@ -249,4 +258,4 @@ class AlgoliaService {
   }
 }
 
-module.exports = AlgoliaService;
+export default AlgoliaService;

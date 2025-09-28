@@ -1,4 +1,4 @@
-const Logger = require('../utils/Logger');
+import Logger from '../utils/Logger.js';
 
 /**
  * Service for normalizing Storyblok stories into Algolia search records
@@ -110,18 +110,55 @@ class RecordNormalizer {
   normalizeCafeComponent(story, component) {
     const record = this.createBaseRecord(story, component);
 
-    record.title = component.name;
-    record.name = component.name;
-    record.location = component.location || '';
+    // Basic Info
+    record.title = component.title || component.name || '';
+    record.name = component.name || component.title || '';
+    record.short_summary = component.short_summary || '';
 
     // Extract description and create summary for search compatibility
     const fullDescription = this.extractRichtextContent(component.description);
     record.description = fullDescription;
-    record.summary = this.createSummary(fullDescription); // For search component compatibility
+    record.summary = component.short_summary || this.createSummary(fullDescription);
 
+    // Location & Hours
+    record.address = component.address || '';
+    record.city = component.city || '';
+    record.location = component.location || `${component.city || ''}, ${component.address || ''}`.trim().replace(/^,\s*/, '');
+
+    // Handle geo_location for Algolia geo search
+    if (component.geo_location) {
+      const [lat, lng] = component.geo_location.split(',').map(coord => parseFloat(coord.trim()));
+      if (!isNaN(lat) && !isNaN(lng)) {
+        record._geoloc = { lat, lng };
+        record.geo_location = component.geo_location;
+      }
+    }
+
+    record.opening_hours = this.extractRichtextContent(component.opening_hours);
+
+    // Amenities & Features
+    record.wifi = component.wifi === true;
+    record.power_outlets = component.power_outlets === true;
+    record.noise_level = component.noise_level || '';
+    record.seating_capacity = component.seating_capacity || '';
+    record.outdoor_seating = component.outdoor_seating === true;
+    record.pet_friendly = component.pet_friendly === true;
+
+    // Media
+    if (component.hero_image?.filename) {
+      record.hero_image = component.hero_image.filename;
+    }
     if (component.image?.filename) {
       record.image = component.image.filename;
     }
+    if (component.gallery && Array.isArray(component.gallery)) {
+      record.gallery = component.gallery.map(img => img.filename).filter(Boolean);
+    }
+
+    // Tags & Categories
+    record.tags = component.tags ? component.tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
+    record.price_range = component.price_range || '';
+    record.specialties = component.specialties || '';
 
     this.addMetadata(record, component.metadata);
 
@@ -216,21 +253,44 @@ class RecordNormalizer {
    */
   addMetadata(record, metadata) {
     if (!metadata || !Array.isArray(metadata) || metadata.length === 0) {
-      record.tags = [];
-      record.metadata = []; // For search component compatibility
-      record.opening_hours = '';
+      // Set defaults for missing metadata
       record.rating = null;
+      record.ai_summary = '';
+      record.ai_tags = '';
+      record.detected_language = 'en';
+      record.open_now = false;
       return;
     }
 
     const meta = metadata[0];
-    const tags = meta.tags ? meta.tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
 
-    record.tags = tags;
-    record.metadata = tags; // For search component compatibility
-    record.opening_hours = meta.opening_hours || '';
+    // If tags aren't already set from component level, set them from metadata
+    if (!record.tags || record.tags.length === 0) {
+      const tags = meta.tags ? meta.tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
+      record.tags = tags;
+    }
+
+    // For backward compatibility
+    record.metadata = record.tags; // For search component compatibility
+
+    // If opening_hours aren't already set from component level, set them from metadata
+    if (!record.opening_hours) {
+      record.opening_hours = this.extractRichtextContent(meta.opening_hours) || '';
+    }
+
     record.rating = typeof meta.rating === 'number' ? meta.rating : null;
+
+    // AI / Enrichment Fields
+    record.ai_summary = meta.ai_summary || '';
+    record.ai_tags = meta.ai_tags || '';
+    record.detected_language = meta.detected_language || 'en';
+    record.open_now = meta.open_now === true;
+
+    // If specialties aren't already set from component level, set them from metadata
+    if (!record.specialties) {
+      record.specialties = meta.specialties || '';
+    }
   }
 }
 
-module.exports = RecordNormalizer;
+export default RecordNormalizer;

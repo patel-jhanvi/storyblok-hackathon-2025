@@ -1,4 +1,4 @@
-const Logger = require('../utils/Logger');
+import Logger from '../utils/Logger.js';
 
 /**
  * Orchestrator service that coordinates the seeding process
@@ -183,4 +183,4 @@ class SeedingOrchestrator {
   }
 }
 
-module.exports = SeedingOrchestrator;
+export default SeedingOrchestrator;

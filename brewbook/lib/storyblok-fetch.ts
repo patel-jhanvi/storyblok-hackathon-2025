@@ -15,7 +15,7 @@ export interface ProcessedCardData {
 export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
   try {
     const response = await fetch(
-      `https://api.storyblok.com/v2/cdn/stories?token=${process.env.NEXT_PUBLIC_STORYBLOK_TOKEN}&version=draft&starts_with=&is_startpage=false`
+      `https://api.storyblok.com/v2/cdn/stories?token=${process.env.NEXT_PUBLIC_STORYBLOK_TOKEN}&version=published&starts_with=&is_startpage=false`
     );
 
     if (!response.ok) {
@@ -26,19 +26,19 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
     const stories = data.stories;
 
     return stories
-      .filter((story: any) =>
+      .filter((story: { content: { body?: Array<{ component: string }> }; slug: string }) =>
         story.content.body &&
         story.content.body.length > 0 &&
         story.slug !== 'home'
       )
-      .map((story: any) => {
+      .map((story: { content: { body: Array<{ component: string; name?: string; title?: string; description?: { content?: Array<{ content?: Array<{ text?: string }> }> }; image?: { filename: string } }> }; slug: string; name: string }) => {
         const bodyContent = story.content.body[0];
         const isEvent = bodyContent.component === 'event';
         const isCafe = bodyContent.component === 'cafe';
 
         if (!isEvent && !isCafe) return null;
 
-        const metadata = bodyContent.metadata?.[0];
+        const metadata = (bodyContent as any).metadata?.[0];
         const tags: string[] = [];
 
         // Add meaningful tags from the metadata
@@ -52,8 +52,8 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
         }
 
         // Add location (city only, without country code)
-        if (bodyContent.location) {
-          const cityName = bodyContent.location.split(',')[0].trim();
+        if ((bodyContent as any).location) {
+          const cityName = (bodyContent as any).location.split(',')[0].trim();
           tags.push(cityName);
         }
 
@@ -62,15 +62,25 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
           tags.push(`★${metadata.rating}`);
         }
 
-        // Add opening hours if available
-        if (metadata?.opening_hours && Array.isArray(metadata.opening_hours)) {
-          const today = new Date().getDay(); // 0 = Sunday
-          const todayHours = metadata.opening_hours[today];
+        // Add opening hours if available and not empty (simplified)
+        if (metadata?.opening_hours) {
+          // Extract text from richtext format
+          let hoursText = '';
+          if (typeof metadata.opening_hours === 'string') {
+            hoursText = metadata.opening_hours;
+          } else if (metadata.opening_hours?.content?.[0]?.content?.[0]?.text) {
+            hoursText = metadata.opening_hours.content[0].content[0].text;
+          }
 
-          if (todayHours && todayHours.open && todayHours.close) {
-            tags.push(`${todayHours.open}-${todayHours.close}`);
-          } else {
-            tags.push("Open");
+          if (hoursText && hoursText.trim()) {
+            // Simplify opening hours display
+            if (hoursText.includes('08:00–18:00') || hoursText.includes('8:00-18:00')) {
+              tags.push('8AM-6PM');
+            } else if (hoursText.includes('7:00-19:00') || hoursText.includes('07:00-19:00')) {
+              tags.push('7AM-7PM');
+            } else {
+              tags.push('Open');
+            }
           }
         }
 
@@ -82,11 +92,11 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
           image: bodyContent.image?.filename || '/images/placeholder.png',
           metadata: tags.slice(0, 5), // Limit to 5 tags to prevent overflow
           slug: story.slug,
-          address: story.content.address,
-          lat: story.content.lat,
-          lng: story.content.lng,
-          amenities: story.content.amenities && story.content.amenities.length > 0
-            ? story.content.amenities
+          address: (bodyContent as any).address,
+          lat: (bodyContent as any).lat,
+          lng: (bodyContent as any).lng,
+          amenities: (bodyContent as any).amenities && (bodyContent as any).amenities.length > 0
+            ? (bodyContent as any).amenities
             : ["WiFi", "Power Outlets", "Pet Friendly"],
         };
       })
@@ -97,10 +107,11 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
   }
 }
 
-export function processSingleStory(story: any): ProcessedCardData {
+// Single story processor (for detail pages)
+export function processSingleStory(story: { content: { body?: Array<{ component: string; metadata?: Array<{ tags?: string }> }> }; slug: string; name: string }): ProcessedCardData {
   const bodyContent = story.content.body?.[0];
   const isEvent = bodyContent?.component === "event";
-  const isCafe = bodyContent?.component === "cafe";
+  // const isCafe = bodyContent?.component === "cafe";
 
   const metadata = bodyContent?.metadata?.[0];
   const tags: string[] = [];
@@ -113,17 +124,17 @@ export function processSingleStory(story: any): ProcessedCardData {
     tags.push(...meaningfulTags);
   }
 
-  if (bodyContent?.location) {
-    const cityName = bodyContent.location.split(",")[0].trim();
+  if ((bodyContent as any)?.location) {
+    const cityName = (bodyContent as any).location.split(",")[0].trim();
     tags.push(cityName);
   }
 
-  if (metadata?.rating) {
-    tags.push(`★${metadata.rating}`);
+  if ((metadata as any)?.rating) {
+    tags.push(`★${(metadata as any).rating}`);
   }
 
-  if (metadata?.opening_hours && metadata.opening_hours.trim()) {
-    if (metadata.opening_hours.includes("08:00–18:00")) {
+  if ((metadata as any)?.opening_hours && (metadata as any).opening_hours.trim()) {
+    if ((metadata as any).opening_hours.includes("08:00–18:00")) {
       tags.push("8AM-6PM");
     } else {
       tags.push("Open");
@@ -132,18 +143,18 @@ export function processSingleStory(story: any): ProcessedCardData {
 
   return {
     type: isEvent ? "event" : "cafe",
-    title: bodyContent?.name || bodyContent?.title || story.name,
+    title: (bodyContent as any)?.name || (bodyContent as any)?.title || story.name,
     summary:
-      bodyContent?.description?.content?.[0]?.content?.[0]?.text ||
+      (bodyContent as any)?.description?.content?.[0]?.content?.[0]?.text ||
       `A ${isEvent ? "great event" : "cozy cafe"} to visit.`,
-    image: bodyContent?.image?.filename || "/images/placeholder.png",
+    image: (bodyContent as any)?.image?.filename || "/images/placeholder.png",
     metadata: tags.slice(0, 5),
     slug: story.slug,
-    address: story.content.address || "",
-    lat: story.content.lat || null,
-    lng: story.content.lng || null,
-    amenities: story.content.amenities && story.content.amenities.length > 0
-      ? story.content.amenities
+    address: (bodyContent as any)?.address || "",
+    lat: (bodyContent as any)?.lat || null,
+    lng: (bodyContent as any)?.lng || null,
+    amenities: (bodyContent as any)?.amenities && (bodyContent as any).amenities.length > 0
+      ? (bodyContent as any).amenities
       : ["WiFi", "Power Outlets", "Pet Friendly"],
   };
 }

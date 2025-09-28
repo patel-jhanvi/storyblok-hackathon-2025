@@ -1,22 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import { storyblokEditable, getStoryblokApi } from "@storyblok/react";
+import { storyblokEditable } from "@storyblok/react";
 import { initStoryblok } from "@/lib/storyblok";
 import Cafe from "@/components/blocks/Cafe";
 import Event from "@/components/blocks/Event";
 
-// Extend Window interface for Storyblok bridge
-declare global {
-  interface Window {
-    storyblok: any;
-  }
-}
-
 export default function SlugPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const [story, setStory] = useState<any>(null);
+  const [story, setStory] = useState<{ id: string; name: string; slug: string; content: { body?: Array<{ component: string }> } } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,7 +22,7 @@ export default function SlugPage() {
         accessToken: process.env.NEXT_PUBLIC_STORYBLOK_TOKEN,
       });
 
-      window.storyblok.on(['input', 'published', 'change'], (event: any) => {
+      window.storyblok.on(['input', 'published', 'change'], (event: { action: string; story: { id: string; name: string; slug: string; content: { body?: Array<{ component: string }> } } }) => {
         if (event.action == 'input') {
           if (event.story.id === story?.id) {
             setStory(event.story);
@@ -45,16 +38,19 @@ export default function SlugPage() {
 
     async function fetchStory() {
       try {
-        const storyblokApi = getStoryblokApi();
-        if (!storyblokApi) {
-          throw new Error("Storyblok API not initialized");
+        const token = process.env.NEXT_PUBLIC_STORYBLOK_TOKEN;
+        if (!token) {
+          throw new Error("Storyblok token not configured");
         }
 
-        const slug = Array.isArray(params.slug) ? params.slug.join("/") : params.slug;
+        const url = `https://api.storyblok.com/v2/cdn/stories/${slug}?token=${token}&version=draft`;
+        const response = await fetch(url);
 
-        const { data } = await storyblokApi.get(`cdn/stories/${slug}`, {
-          version: process.env.NODE_ENV === "production" ? "published" : "draft",
-        });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
         setStory(data.story);
       } catch (error) {
         console.error("Error fetching story:", error);
@@ -66,7 +62,7 @@ export default function SlugPage() {
     if (slug) {
       fetchStory();
     }
-  }, [params.slug]);
+  }, [params.slug, searchParams, story?.id]);
 
   const isPreview = searchParams.get('_storyblok') !== null;
 
@@ -92,9 +88,9 @@ export default function SlugPage() {
     );
   }
 
-  const contentBlok = story.content.body?.[0];
-  const isCafe = contentBlok?.component === 'cafe';
-  const isEvent = contentBlok?.component === 'event';
+  const contentBlok = story.content.body?.[0] || story.content;
+  const isCafe = (contentBlok as any)?.component === 'cafe' || (story.content as any).component === 'cafe';
+  const isEvent = (contentBlok as any)?.component === 'event' || (story.content as any).component === 'event';
 
   return (
     <div {...storyblokEditable(story)} className={`min-h-screen bg-gray-50 ${isPreview ? 'storyblok__outline' : ''}`}>
@@ -111,13 +107,13 @@ export default function SlugPage() {
           {story.name}
         </h1>
 
-        {isCafe && <Cafe blok={contentBlok} />}
-        {isEvent && <Event blok={contentBlok} />}
+        {isCafe && <Cafe blok={story.content as any} />}
+        {isEvent && <Event blok={story.content as any} />}
 
         <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <h3 className="font-semibold text-blue-800 mb-2">Debug Info:</h3>
           <p className="text-sm text-blue-700">
-            Story: {story.slug} | Component: {contentBlok?.component}
+            Story: {story.slug} | Component: {(contentBlok as any)?.component}
           </p>
         </div>
       </div>
