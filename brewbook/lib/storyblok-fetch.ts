@@ -6,6 +6,10 @@ export interface ProcessedCardData {
   image: string;
   metadata: string[];
   slug: string;
+  address?: string;
+  lat?: number;
+  lng?: number;
+  amenities?: string[];
 }
 
 export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
@@ -78,6 +82,10 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
           image: bodyContent.image?.filename || '/images/placeholder.png',
           metadata: tags.slice(0, 5), // Limit to 5 tags to prevent overflow
           slug: story.slug,
+          address: story.content.address,
+          lat: story.content.lat,
+          lng: story.content.lng,
+          amenities: story.content.amenities || [],
         };
       })
       .filter(Boolean);
@@ -87,7 +95,6 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
   }
 }
 
-// Single story processor (for detail pages)
 export function processSingleStory(story: any): ProcessedCardData {
   const bodyContent = story.content.body?.[0];
   const isEvent = bodyContent?.component === "event";
@@ -130,5 +137,9 @@ export function processSingleStory(story: any): ProcessedCardData {
     image: bodyContent?.image?.filename || "/images/placeholder.png",
     metadata: tags.slice(0, 5),
     slug: story.slug,
+    address: story.content.address || "",
+    lat: story.content.lat || null,
+    lng: story.content.lng || null,
+    amenities: story.content.amenities || [],
   };
 }
