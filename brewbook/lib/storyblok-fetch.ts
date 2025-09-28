@@ -58,15 +58,18 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
           tags.push(`★${metadata.rating}`);
         }
 
-        // Add opening hours if available and not empty (simplified)
-        if (metadata?.opening_hours && metadata.opening_hours.trim()) {
-          // Simplify opening hours display
-          if (metadata.opening_hours.includes('08:00–18:00')) {
-            tags.push('8AM-6PM');
+        // Add opening hours if available
+        if (metadata?.opening_hours && Array.isArray(metadata.opening_hours)) {
+          const today = new Date().getDay(); // 0 = Sunday
+          const todayHours = metadata.opening_hours[today];
+
+          if (todayHours && todayHours.open && todayHours.close) {
+            tags.push(`${todayHours.open}-${todayHours.close}`);
           } else {
-            tags.push('Open');
+            tags.push("Open");
           }
         }
+
 
         return {
           type: isEvent ? 'event' : 'cafe',
@@ -82,4 +85,50 @@ export async function fetchStoriesSimple(): Promise<ProcessedCardData[]> {
     console.error('Error fetching Storyblok stories:', error);
     return [];
   }
+}
+
+// Single story processor (for detail pages)
+export function processSingleStory(story: any): ProcessedCardData {
+  const bodyContent = story.content.body?.[0];
+  const isEvent = bodyContent?.component === "event";
+  const isCafe = bodyContent?.component === "cafe";
+
+  const metadata = bodyContent?.metadata?.[0];
+  const tags: string[] = [];
+
+  if (metadata?.tags) {
+    const metaTags = metadata.tags.split(",").map((t: string) => t.trim());
+    const meaningfulTags = metaTags.filter(
+      (tag: string) => !["test", "demo"].includes(tag.toLowerCase())
+    );
+    tags.push(...meaningfulTags);
+  }
+
+  if (bodyContent?.location) {
+    const cityName = bodyContent.location.split(",")[0].trim();
+    tags.push(cityName);
+  }
+
+  if (metadata?.rating) {
+    tags.push(`★${metadata.rating}`);
+  }
+
+  if (metadata?.opening_hours && metadata.opening_hours.trim()) {
+    if (metadata.opening_hours.includes("08:00–18:00")) {
+      tags.push("8AM-6PM");
+    } else {
+      tags.push("Open");
+    }
+  }
+
+  return {
+    type: isEvent ? "event" : "cafe",
+    title: bodyContent?.name || bodyContent?.title || story.name,
+    summary:
+      bodyContent?.description?.content?.[0]?.content?.[0]?.text ||
+      `A ${isEvent ? "great event" : "cozy cafe"} to visit.`,
+    image: bodyContent?.image?.filename || "/images/placeholder.png",
+    metadata: tags.slice(0, 5),
+    slug: story.slug,
+  };
 }

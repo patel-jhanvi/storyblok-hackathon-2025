@@ -25,6 +25,8 @@ import {
     Tag,
     Star,
     Image as ImageIcon,
+    Sun,
+    PawPrint,
 } from "lucide-react";
 
 
@@ -33,7 +35,10 @@ export const IconMap: Record<string, any> = {
     // Cafés
     wifi: Wifi,
     power: Plug,
+    power_outlets: Plug,
     noise: Volume2,
+    noise_level: Volume2,
+    seating_capacity: Users,
     quiet: VolumeX,
     seating: Monitor, // fallback until Lucide has chair
     coffee: Coffee,
@@ -41,7 +46,8 @@ export const IconMap: Record<string, any> = {
     ambience: Music,
     free: FreeIcon,
 
-
+    outdoor_seating: Sun, // new
+    pet_friendly: PawPrint,
     // Study spots
     study: BookOpen,
     hours: Clock,

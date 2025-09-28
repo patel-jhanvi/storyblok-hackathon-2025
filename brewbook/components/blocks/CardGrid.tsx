@@ -58,7 +58,16 @@ export default function CardGrid({ blok }: CardGridProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {data.slice(0, visibleCount).map((item, index) => (
-          <Card key={item.slug || index} {...item} />
+          <Card
+            key={item.slug || index}
+            id={item.slug}
+            type={item.type || "cafe"}
+            title={item.title}
+            summary={item.summary}
+            image={item.image}
+            metadata={item.metadata || []}
+
+          />
         ))}
       </div>
 
