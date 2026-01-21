@@ -4,7 +4,8 @@
 
 Built for the Storyblok x Code & Coffee Hackathon 2025. BrewBook is a scalable, headless CMS-driven platform that helps developers discover the perfect cafe for coding sessions through AI-ranked search and geolocation-based filtering.
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://your-brewbook-link.vercel.app)
+
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://storyblok-hackathon-2025.vercel.app/)
 [![GitHub](https://img.shields.io/badge/GitHub-Repo-blue)](https://github.com/yourusername/brewbook)
 
 ---
